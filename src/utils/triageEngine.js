@@ -1,30 +1,42 @@
+const { exec } = require('child_process');
+const path = require('path');
 const CONSTANTS = require('../config/constants');
 const PROFILE_UTILS = require('../config/seniorProfiles');
 
 /**
- * Simulates Speech-to-Text and Translation.
- * In production, send raw audio buffer to Google/AWS STT API here.
+ * Calls the external Python STT Service
  */
-const processAudioToText = async (audioInput) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        transcript: audioInput || "I fell down", // Simulated output
-        language: audioInput.includes('estoy') ? 'Spanish' : 'English',
-        confidence: 0.95
-      });
-    }, 500);
+const processAudioToText = async (filePath) => {
+  return new Promise((resolve, reject) => {
+    const pythonPath = 'python'; // or 'python3' on Mac/Linux
+    const scriptPath = path.join(__dirname, '../../python-stt/transcribe.py');
+    
+    const command = `${pythonPath} "${scriptPath}" --audio_path "${filePath}"`;
+
+    console.log(`Executing STT: ${command}`);
+
+    exec(command, { timeout: 60000 }, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`STT Error: ${error.message}`);
+        return reject({ error: 'Transcription failed', details: stderr });
+      }
+
+      try {
+        // Parse the JSON string output from Python
+        const data = JSON.parse(stdout);
+        resolve(data);
+      } catch (parseErr) {
+        reject({ error: 'Failed to parse STT output', details: stdout });
+      }
+    });
   });
 };
 
-/**
- * Calculates urgency score based on text and profile.
- */
+// ... Rest of calculateUrgencyScore remains the same ...
 const calculateUrgencyScore = async (text, seniorId) => {
+  // Logic stays identical
   const profile = PROFILE_UTILS.SENIOR_DB[seniorId] || null;
-  let currentScore = 2; // Base score
-
-  // 1. Keyword Analysis
+  let currentScore = 2; 
   const lowerText = text.toLowerCase();
   
   CONSTANTS.KEYWORDS.forEach(item => {
@@ -32,15 +44,13 @@ const calculateUrgencyScore = async (text, seniorId) => {
       currentScore += item.weight;
     }
   });
-
-  // 2. Profile Context Adjustment
+  
   if (profile && profile.conditions.includes('Arrhythmia')) {
     if (lowerText.includes('chest') || lowerText.includes('heart')) {
-      currentScore += 1; // Extra risk factor
+      currentScore += 1; 
     }
   }
 
-  // 3. Clamping Score
   let finalScore = Math.min(Math.max(currentScore, 1), CONSTANTS.SCORE_MAX);
 
   return {
