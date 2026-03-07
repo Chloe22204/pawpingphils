@@ -170,6 +170,7 @@ def print_alert(result: dict) -> None:
 def save_report(result: dict, audio_path: str) -> None:
     profile_block = format_profile_block(result.get("profile", {}))
     report_path = audio_path.replace(".webm", "_risk_report.txt")
+    triage = result.get("triage", {}) if isinstance(result.get("triage"), dict) else {}
 
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("=" * 52 + "\n")
@@ -201,8 +202,22 @@ def save_report(result: dict, audio_path: str) -> None:
         if not result["keywords_found"]:
             f.write("  None detected.\n")
 
+        if triage:
+            f.write("\n  HYBRID TRIAGE\n")
+            f.write("  " + "-" * 40 + "\n")
+            f.write(f"  Final Priority   : {triage.get('priority_level', '-') } ({triage.get('priority_label', '-')})\n")
+            f.write(f"  Rule Priority    : {triage.get('rule_priority_level', '-')}\n")
+            if triage.get("llm_priority_level"):
+                f.write(f"  LLM Priority     : {triage.get('llm_priority_level')}\n")
+            f.write(f"  Decision Source  : {triage.get('decision_source', 'rules_only')}\n")
+            if triage.get("flags"):
+                f.write(f"  Flags            : {', '.join(triage.get('flags', []))}\n")
+            if triage.get("llm_reasoning_summary"):
+                f.write(f"  LLM Reasoning    : {triage.get('llm_reasoning_summary')}\n")
+            if triage.get("llm_status"):
+                f.write(f"  LLM Status       : {triage.get('llm_status')}\n")
+
         f.write("\n" + "=" * 52 + "\n")
 
     print(f"  Risk report saved to: {report_path}")
-
 

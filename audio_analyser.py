@@ -95,6 +95,19 @@ def _detect_breathing(y: np.ndarray, sr: int) -> str:
 
     onset_env    = librosa.onset.onset_strength(y=y, sr=sr)
     onset_frames = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sr)
+    duration_sec = max(len(y) / sr, 0.001)
+    rms          = float(np.sqrt(np.mean(y ** 2)))
+    zcr          = librosa.feature.zero_crossing_rate(y)[0]
+    mean_zcr     = float(np.mean(zcr))
+
+    # Breathing-like envelope pulses (more robust than onset count for short clips)
+    rms_env = librosa.feature.rms(y=y, frame_length=1024, hop_length=256)[0]
+    env_threshold = float(np.mean(rms_env) + (0.35 * np.std(rms_env)))
+    pulse_count = 0
+    for i in range(1, len(rms_env) - 1):
+        if rms_env[i] > env_threshold and rms_env[i] > rms_env[i - 1] and rms_env[i] > rms_env[i + 1]:
+            pulse_count += 1
+    pulse_rate = (pulse_count / duration_sec) * 60 if duration_sec > 0 else 0
 
     # ── Agonal: very irregular sparse bursts ──────────────────────
     if len(onset_frames) > 2:
@@ -104,21 +117,16 @@ def _detect_breathing(y: np.ndarray, sr: int) -> str:
             return "agonal"
 
     # ── Laboured: high ZCR = turbulent airflow ────────────────────
-    zcr      = librosa.feature.zero_crossing_rate(y)[0]
-    mean_zcr = float(np.mean(zcr))
-    if mean_zcr > LABOURED_ZCR_THRESHOLD:
+    if mean_zcr > LABOURED_ZCR_THRESHOLD or (rms > 0.02 and mean_zcr > 0.075 and pulse_count >= 3):
         return "laboured"
 
     # ── Rapid: only if recording > 3s (avoids speech false positives)
-    if len(onset_frames) > 3:
-        duration_sec = len(y) / sr
-        if duration_sec > 3:
-            breath_rate = (len(onset_frames) / duration_sec) * 60
-            if breath_rate > RAPID_BREATH_RATE_THRESHOLD:
-                return "rapid"
+    if duration_sec > 3:
+        breath_rate = (len(onset_frames) / duration_sec) * 60
+        if breath_rate > RAPID_BREATH_RATE_THRESHOLD or pulse_rate > 26:
+            return "rapid"
 
     # ── Absent ────────────────────────────────────────────────────
-    rms = float(np.sqrt(np.mean(y ** 2)))
     if rms < SILENCE_RMS_THRESHOLD * 2:
         return "absent"
 
@@ -168,8 +176,8 @@ def _detect_background_cues(y: np.ndarray, sr: int) -> list:
 
     # ── Impact / crash ────────────────────────────────────────────
     onset_env = librosa.onset.onset_strength(y=y, sr=sr)
-    if float(np.mean(active_pitches_per_frame)) > CARER_PRESENT_THRESHOLD:
-        cues.append("carer_present")
+    if len(onset_env) > 0 and float(np.max(onset_env)) > IMPACT_ONSET_THRESHOLD:
+        cues.append("impact")
 
     # ── Alarm tone ────────────────────────────────────────────────
     stft         = np.abs(librosa.stft(y))
@@ -200,8 +208,10 @@ def _detect_background_cues(y: np.ndarray, sr: int) -> list:
     for t in range(pitches.shape[1]):
         active = int(np.sum(pitches[:, t] > 0))
         active_pitches_per_frame.append(active)
-    if float(np.mean(active_pitches_per_frame)) > CARER_PRESENT_THRESHOLD:
+    if active_pitches_per_frame and float(np.mean(active_pitches_per_frame)) > CARER_PRESENT_THRESHOLD:
         cues.append("carer_present")
+
+    return cues
 
 
 # ── Safe fallback defaults ────────────────────────────────────────────────────

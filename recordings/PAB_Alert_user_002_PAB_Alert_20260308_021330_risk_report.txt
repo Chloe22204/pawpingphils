@@ -1,0 +1,40 @@
+====================================================
+  PAB EMERGENCY RISK REPORT
+====================================================
+
+  Priority  : 🟡 MEDIUM
+  File      : PAB_Alert_user_002_PAB_Alert_20260308_021330.webm
+  Timestamp : 2026-03-08 02:13:36
+
+  PATIENT INFORMATION
+  ----------------------------------------
+  Name              : Lim Bee Hoon
+  Age               : 82
+  Contact           : +65 9234 5678
+  Emergency Contact : Lim Siew Ling (Daughter) — +65 9765 4321
+  Address           : Blk 456 Bedok North Ave 3, #03-08, Singapore 460456
+  Mobility          : Uses wheelchair
+  Language          : Cantonese / English
+  Medical History   : Osteoporosis, Glaucoma
+  Current Medications:
+    - Calcium 600mg (once daily)
+    - Timolol eye drops (twice daily)
+
+  TRANSCRIPT
+  ----------------------------------------
+  Help! I fell into the toilet!
+
+  KEYWORDS DETECTED
+  ----------------------------------------
+  CRITICAL : help
+
+  HYBRID TRIAGE
+  ----------------------------------------
+  Final Priority   : P3 (MEDIUM)
+  Rule Priority    : P3
+  Decision Source  : rules_only
+  LLM Status       : HTTP 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/e
+
+====================================================

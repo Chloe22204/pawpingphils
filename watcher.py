@@ -7,6 +7,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from triage_engine import run_triage
 from audio_analyser import analyse_audio
+from llm_triage import request_llm_triage, merge_rule_and_llm
 
 # add extract to path
 sys.path.append(str(Path(__file__).parent))
@@ -23,6 +24,13 @@ model = whisper.load_model("small")
 print("✅ Model ready\n")
 
 WATCH_FOLDER = Path("recordings")
+
+PRIORITY_BADGE = {
+    "P1": "🔴 CRITICAL",
+    "P2": "🟠 HIGH",
+    "P3": "🟡 MEDIUM",
+    "P4": "🟢 LOW",
+}
 
 def transcribe_and_analyse(audio_path: Path):
     result = model.transcribe(
@@ -56,13 +64,11 @@ def transcribe_and_analyse(audio_path: Path):
     # ── keyword detection ─────────────────────────────────────────
     detection = analyse(transcript, audio_filename=audio_path.name, audio_path=str(audio_path))
     print_alert(detection)
-    save_report(detection, str(audio_path))
-
     # ── Phase 2: real audio analysis ─────────────────────────────
     signals = analyse_audio(str(audio_path))
 
-    # ── run triage engine with real signals ───────────────────────
-    triage_result = run_triage({
+    # ── run deterministic rules engine ────────────────────────────
+    rule_result = run_triage({
         "audio_present":    signals["audio_present"],
         "breathing_state":  signals["breathing_state"],
         "vocal_tone":       signals["vocal_tone"],
@@ -70,14 +76,31 @@ def transcribe_and_analyse(audio_path: Path):
         "background_cues":  signals["background_cues"],
     })
 
+    # ── optional LLM triage overlay (never downgrades rules) ─────
+    llm_result = request_llm_triage(
+        transcript=transcript,
+        signals=signals,
+        profile=detection.get("profile", {}),
+        matched_keywords=detection.get("keywords_found", []),
+    )
+    triage_result = merge_rule_and_llm(rule_result, llm_result)
+
     print(f"\n🚨 TRIAGE: {triage_result['priority_level']} — {triage_result['priority_label']}")
     print(f"   Dispatch : {triage_result['dispatch_action']}")
     print(f"   Response : {triage_result['response_target']}")
     if triage_result['flags']:
         print(f"   Flags    : {', '.join(triage_result['flags'])}")
+    if triage_result.get("decision_source"):
+        print(f"   Source   : {triage_result['decision_source']}")
+    if triage_result.get("llm_reasoning_summary"):
+        print(f"   LLM Note : {triage_result['llm_reasoning_summary']}")
+    if triage_result.get("llm_status"):
+        print(f"   LLM      : {triage_result['llm_status']}")
     print(f"   Path     : {' → '.join(triage_result['trigger_path'])}")
 
     detection["triage"] = triage_result
+    detection["priority"] = PRIORITY_BADGE.get(triage_result["priority_level"], detection.get("priority", "🟢 LOW"))
+    detection["top_tier"] = triage_result["priority_label"].lower()
     save_report(detection, str(audio_path))
 
 

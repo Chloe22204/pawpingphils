@@ -1,0 +1,38 @@
+====================================================
+  PAB EMERGENCY RISK REPORT
+====================================================
+
+  Priority  : 🟠 HIGH
+  File      : PAB_Alert_user_002_PAB_Alert_20260308_021125.webm
+  Timestamp : 2026-03-08 02:11:30
+
+  PATIENT INFORMATION
+  ----------------------------------------
+  Name              : Lim Bee Hoon
+  Age               : 82
+  Contact           : +65 9234 5678
+  Emergency Contact : Lim Siew Ling (Daughter) — +65 9765 4321
+  Address           : Blk 456 Bedok North Ave 3, #03-08, Singapore 460456
+  Mobility          : Uses wheelchair
+  Language          : Cantonese / English
+  Medical History   : Osteoporosis, Glaucoma
+  Current Medications:
+    - Calcium 600mg (once daily)
+    - Timolol eye drops (twice daily)
+
+  TRANSCRIPT
+  ----------------------------------------
+  It hurts so much that I fell down.
+
+  KEYWORDS DETECTED
+  ----------------------------------------
+  HIGH     : fell down, hurts
+
+  HYBRID TRIAGE
+  ----------------------------------------
+  Final Priority   : P2 (HIGH)
+  Rule Priority    : P2
+  Decision Source  : rules_only
+  LLM Status       : OPENAI_API_KEY not set
+
+====================================================
