@@ -1,5 +1,5 @@
 from datetime import datetime
-from detector.profile_loader import load_profile, format_profile_block
+from extract.detector.profile_loader import load_profile, format_profile_block
 
 # ── keyword tiers ────────────────────────────────────────────
 CRITICAL = [

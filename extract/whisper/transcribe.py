@@ -12,7 +12,7 @@ from detector.keyword_detector import analyse, print_alert, save_report  # noqa:
 import whisper  # noqa: E402
 
 # ── load model ───────────────────────────────────────────────
-model: whisper.Whisper = whisper.load_model("medium")
+model = whisper.load_model("small")
 
 # ── get audio file from argument ─────────────────────────────
 if len(sys.argv) < 2:
