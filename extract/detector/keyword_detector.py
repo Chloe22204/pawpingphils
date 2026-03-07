@@ -2,30 +2,56 @@ from datetime import datetime
 from extract.detector.profile_loader import load_profile, format_profile_block
 
 # ── keyword tiers ────────────────────────────────────────────
+# ── keyword tiers ────────────────────────────────────────────
+
+# CRITICAL (immediate human life threat)
 CRITICAL = [
-    "fire", "burning", "flames",
+    # medical emergencies
     "heart attack", "chest pain", "can't breathe", "cannot breathe", "not breathing",
-    "stroke", "unconscious", "not responding", "collapsed",
-    "bleeding", "blood", "stabbed", "attacked",
-    "drowning", "choking",
-    "help me", "help", "emergency", "call ambulance", "call 995"
+    "stroke", "unconscious", "not responding", "collapsed", "seizure", "convulsing",
+    "bleeding heavily", "blood everywhere", "stabbed", "attacked",
+    "drowning", "choking", "overdose", "poisoned",
+    # fire/environment threatening life
+    "fire", "burning", "trapped in fire", "smoke", "can't escape",
+    # calls for help
+    "help me", "save me", "emergency", "call ambulance", "call 995", "dying",
+    # falls with injury
+    "hit my head", "head injury", "knocked out", "can't move",
 ]
 
+# HIGH (serious human injury, needs urgent attention)
 HIGH = [
+    # human physical injury
     "fell down", "fallen", "fall", "can't get up", "cannot get up",
-    "broken", "fracture", "injured", "injury",
+    "broken", "broke","fracture", "injured", "injury", "hurt myself",
+    "bleeding", "blood", "cut myself", "bruised",
     "dizzy", "fainted", "faint", "nausea", "vomiting",
-    "pain", "hurts", "hurting", "ache",
-    "alone", "no one", "nobody home",
-    "confused", "disoriented", "lost",
+    "pain", "hurts", "hurting", "ache", "sore",
+    "swollen", "twisted", "sprained",
+    # vulnerability
+    "alone", "no one home", "nobody home", "locked out",
+    "confused", "disoriented", "lost", "can't remember",
 ]
 
+# MEDIUM (human discomfort, non-urgent)
 MEDIUM = [
-    "scared", "afraid", "frightened", "worried",
-    "unwell", "sick", "not feeling well", "weak", "tired",
+    # mild human symptoms
+    "scared", "afraid", "frightened", "worried", "anxious",
+    "unwell", "sick", "not feeling well", "weak", "tired", "exhausted",
     "medicine", "medication", "forgot", "missed dose",
     "stuck", "trapped", "locked",
-    "wet", "soiled",
+    "wet", "soiled", "cold", "hot",
+    "hungry", "thirsty",
+]
+
+# LOW (non-human / property / pet incidents — noted but deprioritised)
+LOW = [
+    # pet incidents
+    "rabbit", "cat", "dog", "bird", "fish", "hamster", "pet",
+    "died", "dead", "passed away", "gone",
+    # property
+    "broken phone", "lost keys", "spilled", "dropped",
+    "power outage", "lights out",
 ]
 
 # ── priority labels ───────────────────────────────────────────
@@ -40,19 +66,57 @@ def get_priority(tier: str) -> str:
 # ── main detector ─────────────────────────────────────────────
 def analyse(transcript: str, audio_filename: str = "unknown", audio_path: str = "") -> dict:
     text = transcript.lower()
-    matched: dict = {"critical": [], "high": [], "medium": []}
+    matched: dict = {"critical": [], "high": [], "medium": [], "low": []}
 
     for kw in CRITICAL:
         if kw in text and kw not in matched["critical"]:
             matched["critical"].append(kw)
+
     for kw in HIGH:
         if kw in text and kw not in matched["high"]:
             matched["high"].append(kw)
+
     for kw in MEDIUM:
         if kw in text and kw not in matched["medium"]:
             matched["medium"].append(kw)
 
-    if matched["critical"]:
+    for kw in LOW:
+        if kw in text and kw not in matched["low"]:
+            matched["low"].append(kw)
+
+    # ── check if critical/high keywords are about a pet, not a human ──
+    PET_WORDS = ["dog", "cat", "rabbit", "bird", "fish", "hamster", "pet", "animal"]
+
+    def is_about_pet(keyword: str) -> bool:
+        """Check if a keyword appears in a sentence that also contains a pet word."""
+        sentences = text.replace(",", ".").replace("!", ".").replace("?", ".").split(".")
+        for sentence in sentences:
+            if keyword in sentence:
+                for pet in PET_WORDS:
+                    if pet in sentence:
+                        return True
+        return False
+
+    # filter out critical/high keywords that are actually about pets
+    human_critical = [kw for kw in matched["critical"] if not is_about_pet(kw)]
+    human_high     = [kw for kw in matched["high"]     if not is_about_pet(kw)]
+
+    # keep pet-related ones for display but don't let them drive priority
+    pet_critical = [kw for kw in matched["critical"] if is_about_pet(kw)]
+    pet_high     = [kw for kw in matched["high"]     if is_about_pet(kw)]
+
+    # move pet-hijacked critical/high keywords into low
+    matched["low"] = matched["low"] + pet_critical + pet_high
+    matched["critical"] = human_critical
+    matched["high"]     = human_high
+
+    # ── priority logic ────────────────────────────────────────
+    has_human_injury = bool(matched["critical"] or matched["high"] or matched["medium"])
+    only_low = bool(matched["low"]) and not has_human_injury
+
+    if only_low:
+        top_tier = "low"
+    elif matched["critical"]:
         top_tier = "critical"
     elif matched["high"]:
         top_tier = "high"
@@ -61,7 +125,6 @@ def analyse(transcript: str, audio_filename: str = "unknown", audio_path: str = 
     else:
         top_tier = "low"
 
-    # load profile at analysis time
     profile = load_profile(audio_path)
 
     return {
@@ -71,10 +134,10 @@ def analyse(transcript: str, audio_filename: str = "unknown", audio_path: str = 
         "priority":       get_priority(top_tier),
         "top_tier":       top_tier,
         "matched":        matched,
-        "keywords_found": matched["critical"] + matched["high"] + matched["medium"],
-        "profile":        profile,   # ← attach profile to result
+        "keywords_found": matched["critical"] + matched["high"] + matched["medium"] + matched["low"],
+        "profile":        profile,
     }
-
+    
 def print_alert(result: dict) -> None:
     profile_block = format_profile_block(result.get("profile", {}))
     print("\n" + "="*52)
@@ -99,9 +162,12 @@ def print_alert(result: dict) -> None:
         print(f"  🟠 High     : {', '.join(result['matched']['high'])}")
     if result["matched"]["medium"]:
         print(f"  🟡 Medium   : {', '.join(result['matched']['medium'])}")
+    if result["matched"]["low"]:
+        print(f"  🟢 Low (non-human) : {', '.join(result['matched']['low'])}")
     if not result["keywords_found"]:
         print("  No risk keywords detected.")
     print("="*52 + "\n")
+
 
 def save_report(result: dict, audio_path: str) -> None:
     profile_block = format_profile_block(result.get("profile", {}))
@@ -132,6 +198,8 @@ def save_report(result: dict, audio_path: str) -> None:
             f.write(f"  HIGH     : {', '.join(result['matched']['high'])}\n")
         if result["matched"]["medium"]:
             f.write(f"  MEDIUM   : {', '.join(result['matched']['medium'])}\n")
+        if result["matched"]["low"]:
+            f.write(f"  🟢 Low (non-human) : {', '.join(result['matched']['low'])}\n")
         if not result["keywords_found"]:
             f.write("  None detected.\n")
 

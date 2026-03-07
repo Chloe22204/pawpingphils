@@ -26,7 +26,7 @@ def transcribe_and_analyse(audio_path: Path):
     result = model.transcribe(
         str(audio_path),
         task="translate",
-        language=None,
+        language="zh",
         no_speech_threshold=0.6,
         logprob_threshold=-1.0,
         compression_ratio_threshold=2.4,
