@@ -5,6 +5,8 @@ import os
 from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from triage_engine import run_triage
+from audio_analyser import analyse_audio
 
 # add extract to path
 sys.path.append(str(Path(__file__).parent))
@@ -51,10 +53,33 @@ def transcribe_and_analyse(audio_path: Path):
     with open(txt_path, "w", encoding="utf-8") as f:
         f.write(transcript)
 
-    # keyword detection
+    # ── keyword detection ─────────────────────────────────────────
     detection = analyse(transcript, audio_filename=audio_path.name, audio_path=str(audio_path))
     print_alert(detection)
     save_report(detection, str(audio_path))
+
+    # ── Phase 2: real audio analysis ─────────────────────────────
+    signals = analyse_audio(str(audio_path))
+
+    # ── run triage engine with real signals ───────────────────────
+    triage_result = run_triage({
+        "audio_present":    signals["audio_present"],
+        "breathing_state":  signals["breathing_state"],
+        "vocal_tone":       signals["vocal_tone"],
+        "matched_keywords": detection["keywords_found"],
+        "background_cues":  signals["background_cues"],
+    })
+
+    print(f"\n🚨 TRIAGE: {triage_result['priority_level']} — {triage_result['priority_label']}")
+    print(f"   Dispatch : {triage_result['dispatch_action']}")
+    print(f"   Response : {triage_result['response_target']}")
+    if triage_result['flags']:
+        print(f"   Flags    : {', '.join(triage_result['flags'])}")
+    print(f"   Path     : {' → '.join(triage_result['trigger_path'])}")
+
+    detection["triage"] = triage_result
+    save_report(detection, str(audio_path))
+
 
 class AlertHandler(FileSystemEventHandler):
     def on_created(self, event):
@@ -78,3 +103,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
+    

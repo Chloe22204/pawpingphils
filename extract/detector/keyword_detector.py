@@ -10,7 +10,7 @@ CRITICAL = [
     "heart attack", "chest pain", "can't breathe", "cannot breathe", "not breathing",
     "stroke", "unconscious", "not responding", "collapsed", "seizure", "convulsing",
     "bleeding heavily", "blood everywhere", "stabbed", "attacked",
-    "drowning", "choking", "overdose", "poisoned",
+    "drowning", "choking", "overdose", "poisoned", "help", "stab", "poke", "slashed", "slash","drowned",
     # fire/environment threatening life
     "fire", "burning", "trapped in fire", "smoke", "can't escape",
     # calls for help
@@ -23,34 +23,32 @@ CRITICAL = [
 HIGH = [
     # human physical injury
     "fell down", "fallen", "fall", "can't get up", "cannot get up",
-    "broken", "broke","fracture", "injured", "injury", "hurt myself",
+    "broken", "broke","fracture", "fractured","injured", "injury", "hurt myself",
     "bleeding", "blood", "cut myself", "bruised",
     "dizzy", "fainted", "faint", "nausea", "vomiting",
     "pain", "hurts", "hurting", "ache", "sore",
     "swollen", "twisted", "sprained",
     # vulnerability
     "alone", "no one home", "nobody home", "locked out",
-    "confused", "disoriented", "lost", "can't remember",
-]
+    "confused", "disoriented", "lost", "can't remember","slip","slipped","slipping","tripped","trip"]
 
 # MEDIUM (human discomfort, non-urgent)
 MEDIUM = [
     # mild human symptoms
     "scared", "afraid", "frightened", "worried", "anxious",
-    "unwell", "sick", "not feeling well", "weak", "tired", "exhausted",
-    "medicine", "medication", "forgot", "missed dose",
+    "unwell", "sick", "not feeling well", "weak", "tired", "exhausted", "missed dose",
     "stuck", "trapped", "locked",
     "wet", "soiled", "cold", "hot",
-    "hungry", "thirsty",
+    "hungry", "thirsty","tripped","trip","pop","popped"
 ]
 
 # LOW (non-human / property / pet incidents — noted but deprioritised)
 LOW = [
     # pet incidents
     "rabbit", "cat", "dog", "bird", "fish", "hamster", "pet",
-    "died", "dead", "passed away", "gone",
+    "died", "dead", "passed away", "gone","turtle",
     # property
-    "broken phone", "lost keys", "spilled", "dropped",
+    "broken phone", "lost keys", "spilled", "dropped","drop", "broke", "leaking", "flooded", "flood", "power cut", "power failure", "no power",
     "power outage", "lights out",
 ]
 

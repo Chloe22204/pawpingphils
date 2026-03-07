@@ -2,9 +2,9 @@
   PAB EMERGENCY RISK REPORT
 ====================================================
 
-  Priority  : 🟠 HIGH
-  File      : PAB_Alert_user_001_PAB_Alert_20260307_201239.webm
-  Timestamp : 2026-03-07 20:12:47
+  Priority  : 🔴 CRITICAL
+  File      : PAB_Alert_user_001_PAB_Alert_20260307_231006.webm
+  Timestamp : 2026-03-07 23:10:13
 
   PATIENT INFORMATION
   ----------------------------------------
@@ -24,10 +24,10 @@
 
   TRANSCRIPT
   ----------------------------------------
-  Help! I fell down!
+  I need help
 
   KEYWORDS DETECTED
   ----------------------------------------
-  HIGH     : fell down
+  CRITICAL : help
 
 ====================================================
