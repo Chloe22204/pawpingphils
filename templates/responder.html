@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,37 +13,13 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: #f0f4f8; min-h
 ::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 99px; }
 button { font-family: inherit; cursor: pointer; }
 input { font-family: inherit; }
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.5); }
-}
-@keyframes wave {
-  from { transform: scaleY(0.3); }
-  to { transform: scaleY(1.4); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slidein {
-  from { opacity: 0; transform: translateX(-12px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-/* NAV */
-#topnav {
-  background: #0f172a; color: #fff;
-  padding: 0 24px; height: 52px;
-  display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid #1e293b; flex-shrink: 0;
-}
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.5); } }
+@keyframes wave { from { transform: scaleY(0.3); } to { transform: scaleY(1.4); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInNew { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+#topnav { background: #0f172a; color: #fff; padding: 0 24px; height: 52px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e293b; flex-shrink: 0; }
 .nav-logo { display: flex; align-items: center; gap: 12px; }
-.nav-icon {
-  width: 28px; height: 28px; border-radius: 6px;
-  background: linear-gradient(135deg, #e53e3e, #c53030);
-  display: flex; align-items: center; justify-content: center; font-size: 14px;
-}
+.nav-icon { width: 28px; height: 28px; border-radius: 6px; background: linear-gradient(135deg, #e53e3e, #c53030); display: flex; align-items: center; justify-content: center; font-size: 14px; }
 .nav-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 15px; letter-spacing: -0.01em; }
 .nav-badge { font-size: 10px; color: #475569; background: #1e293b; padding: 2px 8px; border-radius: 4px; font-family: monospace; letter-spacing: 0.08em; }
 .nav-right { display: flex; align-items: center; gap: 16px; }
@@ -53,12 +28,7 @@ input { font-family: inherit; }
 .critical-text { font-size: 11px; color: #fc8181; font-weight: 600; }
 #clock { font-size: 11px; color: #64748b; font-family: monospace; }
 .nav-avatar { width: 28px; height: 28px; border-radius: 50%; background: #1e293b; display: flex; align-items: center; justify-content: center; font-size: 13px; }
-
-/* STAT STRIP */
-#statstrip {
-  background: #fff; border-bottom: 1px solid #e2e8f0;
-  padding: 10px 24px; display: flex; gap: 0; flex-shrink: 0; align-items: center;
-}
+#statstrip { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 10px 24px; display: flex; gap: 0; flex-shrink: 0; align-items: center; }
 .stat-item { padding: 0 20px; border-right: 1px solid #e2e8f0; text-align: center; }
 .stat-item:first-child { text-align: left; }
 .stat-item:last-of-type { border-right: none; }
@@ -66,200 +36,88 @@ input { font-family: inherit; }
 .stat-label { font-size: 10px; color: #a0aec0; letter-spacing: 0.05em; margin-top: 1px; }
 .ai-indicator { margin-left: auto; display: flex; align-items: center; gap: 5px; font-size: 10px; color: #48bb78; font-weight: 600; }
 .ai-dot { width: 6px; height: 6px; border-radius: 50%; background: #48bb78; }
-
-/* BODY */
 #main { display: flex; flex: 1; overflow: hidden; }
-
-/* LEFT PANEL */
-#leftpanel {
-  width: 340px; background: #f8fafc;
-  border-right: 1px solid #e2e8f0;
-  display: flex; flex-direction: column; flex-shrink: 0;
-}
+#leftpanel { width: 340px; background: #f8fafc; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; flex-shrink: 0; }
 #searchbar { padding: 14px 16px; border-bottom: 1px solid #e2e8f0; background: #fff; }
-#searchinput {
-  width: 100%; padding: 8px 12px; border-radius: 7px;
-  border: 1px solid #e2e8f0; font-size: 12px; outline: none;
-  background: #f7fafc; color: #2d3748; margin-bottom: 10px;
-}
+#searchinput { width: 100%; padding: 8px 12px; border-radius: 7px; border: 1px solid #e2e8f0; font-size: 12px; outline: none; background: #f7fafc; color: #2d3748; margin-bottom: 10px; }
 #searchinput:focus { border-color: #90cdf4; }
 #filters { display: flex; gap: 5px; }
-.filter-btn {
-  flex: 1; padding: 4px 2px; font-size: 9.5px; font-weight: 700;
-  border-radius: 5px; border: 1px solid #e2e8f0;
-  letter-spacing: 0.05em; background: #fff; color: #718096;
-  transition: all 0.15s;
-}
-.filter-btn.active-ALL,
-.filter-btn.active-ACTIVE { border-color: #2b6cb0; background: #ebf8ff; color: #2b6cb0; }
+.filter-btn { flex: 1; padding: 4px 2px; font-size: 9.5px; font-weight: 700; border-radius: 5px; border: 1px solid #e2e8f0; letter-spacing: 0.05em; background: #fff; color: #718096; transition: all 0.15s; }
+.filter-btn.active-ALL, .filter-btn.active-ACTIVE { border-color: #2b6cb0; background: #ebf8ff; color: #2b6cb0; }
 .filter-btn.active-HIGH { border-color: #e53e3e; background: #fff5f5; color: #e53e3e; }
 .filter-btn.active-MODERATE { border-color: #d97706; background: #fffbeb; color: #d97706; }
 .filter-btn.active-LOW { border-color: #059669; background: #f0fdf4; color: #059669; }
-
-#alertlist { flex: 1; overflow-y: auto; padding: 12px; }
-
-/* ALERT CARD */
-.alert-card {
-  background: #fff; border: 1.5px solid #e2e8f0;
-  border-radius: 10px; padding: 14px 16px;
-  cursor: pointer; transition: all 0.2s ease;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  margin-bottom: 10px; animation: slidein 0.3s ease;
-}
+.sort-indicator { font-size: 10px; color: #a0aec0; padding: 6px 16px 2px; letter-spacing: 0.05em; font-weight: 600; }
+#alertlist { flex: 1; overflow-y: auto; padding: 10px 12px; }
+.alert-card { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: box-shadow 0.2s ease, background 0.2s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 10px; }
+.alert-card.is-new { animation: slideInNew 0.35s ease; }
 .alert-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
 .alert-card.selected { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
 .card-name { font-size: 13px; font-weight: 700; color: #1a202c; }
 .card-meta { font-size: 11px; color: #718096; font-family: monospace; }
 .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-.urgency-badge {
-  font-size: 10px; font-weight: 800; letter-spacing: 0.08em;
-  padding: 2px 8px; border-radius: 99px; border: 1px solid;
-}
+.urgency-badge { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 99px; border: 1px solid; }
 .card-elapsed { font-size: 10px; color: #a0aec0; }
-.card-transcript {
-  font-size: 11px; color: #4a5568; background: #f7fafc;
-  border-radius: 6px; padding: 5px 8px; margin-bottom: 8px; font-style: italic;
-}
+.card-transcript { font-size: 11px; color: #4a5568; background: #f7fafc; border-radius: 6px; padding: 5px 8px; margin-bottom: 8px; font-style: italic; }
 .card-bottom { display: flex; justify-content: space-between; align-items: center; }
 .status-chip { font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 600; }
-
-/* CONFIDENCE BAR */
 .conf-row { display: flex; align-items: center; gap: 8px; min-width: 90px; }
 .conf-track { flex: 1; height: 5px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
 .conf-fill { height: 100%; border-radius: 99px; }
 .conf-label { font-size: 11px; font-family: monospace; font-weight: 700; min-width: 36px; text-align: right; }
-
-/* RIGHT PANEL */
 #rightpanel { flex: 1; background: #fff; overflow-y: auto; }
 #detailpanel { padding: 24px 28px; }
 #empty-state { display: flex; align-items: center; justify-content: center; height: 100%; color: #a0aec0; font-size: 14px; }
-
-/* DETAIL */
 .detail-header { margin-bottom: 24px; }
 .detail-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
 .case-id { font-size: 11px; font-family: monospace; color: #a0aec0; letter-spacing: 0.1em; margin-bottom: 4px; }
 .case-name { font-size: 22px; font-weight: 800; color: #1a202c; font-family: 'Syne', sans-serif; }
 .case-sub { font-size: 13px; color: #718096; margin-top: 2px; }
-.urgency-ring {
-  width: 72px; height: 72px; border-radius: 50%;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  box-shadow: 0 0 0 6px rgba(0,0,0,0.06); flex-shrink: 0;
-}
+.urgency-ring { width: 72px; height: 72px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 0 6px rgba(0,0,0,0.06); flex-shrink: 0; }
 .ring-label { font-size: 11px; font-weight: 800; letter-spacing: 0.05em; }
 .ring-conf { font-size: 10px; }
-.urgency-banner {
-  border-radius: 8px; padding: 10px 14px;
-  border-left: 4px solid; font-size: 13px; font-weight: 600;
-}
-.section-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-  color: #a0aec0; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
-}
+.urgency-banner { border-radius: 8px; padding: 10px 14px; border-left: 4px solid; font-size: 13px; font-weight: 600; }
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #a0aec0; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
 .section-label::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
 .detail-section { margin-bottom: 20px; }
-
-/* ADDRESS */
-.address-box {
-  background: #f7fafc; border: 1px solid #e2e8f0;
-  border-radius: 8px; padding: 12px 14px;
-  display: flex; justify-content: space-between; align-items: center;
-}
+.address-box { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; }
 .address-text { font-size: 14px; font-weight: 600; color: #1a202c; }
 .address-sub { font-size: 11px; color: #a0aec0; margin-top: 2px; }
-.map-btn {
-  font-size: 11px; padding: 5px 12px; border-radius: 6px;
-  background: #2b6cb0; color: #fff; border: none; font-weight: 600;
-  cursor: pointer;
-}
-
-/* PATIENT INFO */
-.info-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-}
-.info-item {
-  background: #f7fafc; border: 1px solid #e2e8f0;
-  border-radius: 6px; padding: 8px 12px;
-}
+.map-btn { font-size: 11px; padding: 5px 12px; border-radius: 6px; background: #2b6cb0; color: #fff; border: none; font-weight: 600; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.info-item { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; }
 .info-item-label { font-size: 10px; color: #a0aec0; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 2px; }
 .info-item-val { font-size: 12px; color: #1a202c; font-weight: 600; }
 .info-item.full { grid-column: 1 / -1; }
-.allergy-tag {
-  display: inline-block; font-size: 11px; padding: 3px 10px;
-  border-radius: 99px; background: #fff5f5; color: #e53e3e;
-  border: 1px solid #feb2b2; font-weight: 600; margin-right: 4px;
-}
-
-/* AUDIO PLAYER */
-.audio-box {
-  border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; transition: all 0.3s;
-}
+.allergy-tag { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 99px; background: #fff5f5; color: #e53e3e; border: 1px solid #feb2b2; font-weight: 600; margin-right: 4px; }
+.audio-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; transition: all 0.3s; }
 .audio-box.playing { background: #fff5f5; border-color: #feb2b2; }
 .audio-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-.play-btn {
-  width: 36px; height: 36px; border-radius: 50%;
-  border: none; color: #fff; font-size: 14px;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  transition: background 0.2s; cursor: pointer;
-}
+.play-btn { width: 36px; height: 36px; border-radius: 50%; border: none; color: #fff; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s; }
 .audio-filename { font-size: 11px; font-family: monospace; color: #718096; margin-bottom: 4px; }
 .waveform { display: flex; align-items: center; gap: 2px; height: 28px; }
-.wbar { width: 3px; border-radius: 2px; background: #cbd5e0; transition: height 0.3s; }
+.wbar { width: 3px; border-radius: 2px; background: #cbd5e0; }
 .wbar.active { background: #e53e3e; }
-.transcript-box {
-  background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
-  padding: 8px 12px; font-size: 12px; color: #4a5568; font-style: italic;
-}
+.transcript-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #4a5568; font-style: italic; }
 .transcript-prefix { font-style: normal; font-weight: 600; color: #718096; font-size: 10px; letter-spacing: 0.08em; }
-
-/* KEYWORDS */
 .keyword-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .kw-tag { font-size: 11px; padding: 3px 10px; border-radius: 99px; font-weight: 600; border: 1px solid; }
-
-/* CONDITIONS */
 .conditions-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .condition-tag { font-size: 11px; padding: 4px 10px; border-radius: 99px; background: #ebf4ff; color: #2b6cb0; border: 1px solid #bee3f8; font-weight: 500; }
-
-/* MEDS */
 .med-list { display: flex; flex-direction: column; gap: 4px; }
 .med-item { font-size: 12px; color: #4a5568; padding: 5px 10px; background: #f7fafc; border-radius: 5px; border: 1px solid #e2e8f0; }
-
-/* ACTIONS */
 .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-.action-btn {
-  padding: 9px 8px; border-radius: 7px; background: #fff;
-  font-size: 12px; font-weight: 600; transition: all 0.2s; text-align: left;
-  border: 1.5px solid; cursor: pointer;
-}
-.action-btn:hover { opacity: 0.85; }
+.action-btn { padding: 9px 8px; border-radius: 7px; background: #fff; font-size: 12px; font-weight: 600; transition: all 0.2s; text-align: left; border: 1.5px solid; }
 .status-btns { display: flex; gap: 8px; }
-.status-toggle {
-  flex: 1; padding: 8px 4px; border-radius: 7px;
-  font-size: 11px; font-weight: 700; transition: all 0.2s; text-transform: capitalize;
-  cursor: pointer;
-}
-
-/* TOAST */
-#toast {
-  position: fixed; top: 70px; right: 20px;
-  background: #1a202c; color: #fff;
-  border-left: 4px solid #e53e3e;
-  padding: 12px 16px; border-radius: 8px;
-  font-size: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  animation: fadeIn 0.3s ease; z-index: 999;
-  display: none;
-}
+.status-toggle { flex: 1; padding: 8px 4px; border-radius: 7px; font-size: 11px; font-weight: 700; transition: all 0.2s; text-transform: capitalize; }
+#toast { position: fixed; top: 70px; right: 20px; background: #1a202c; color: #fff; border-left: 4px solid #e53e3e; padding: 12px 16px; border-radius: 8px; font-size: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); animation: fadeIn 0.3s ease; z-index: 999; display: none; }
 .toast-title { font-weight: 700; margin-bottom: 2px; color: #fc8181; }
-
-/* NO ALERTS */
-.no-alerts {
-  text-align: center; color: #a0aec0; font-size: 13px; margin-top: 40px; line-height: 1.8;
-}
+.no-alerts { text-align: center; color: #a0aec0; font-size: 13px; margin-top: 40px; line-height: 1.8; }
 </style>
 </head>
 <body>
 
-<!-- TOP NAV -->
 <div id="topnav">
   <div class="nav-logo">
     <div class="nav-icon">🔔</div>
@@ -276,56 +134,36 @@ input { font-family: inherit; }
   </div>
 </div>
 
-<!-- STAT STRIP -->
 <div id="statstrip">
-  <div class="stat-item">
-    <div class="stat-val" id="statActive" style="color:#1a202c">0</div>
-    <div class="stat-label">Active Alerts</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-val" id="statHigh" style="color:#e53e3e">0</div>
-    <div class="stat-label">🔴 HIGH</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-val" id="statMod" style="color:#d97706">0</div>
-    <div class="stat-label">🟡 MODERATE</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-val" id="statLow" style="color:#059669">0</div>
-    <div class="stat-label">🟢 LOW</div>
-  </div>
-  <div class="stat-item" style="border-right:none">
-    <div class="stat-val" id="statResolved" style="color:#718096">0</div>
-    <div class="stat-label">✓ Resolved Today</div>
-  </div>
-  <div class="ai-indicator">
-    <div class="ai-dot"></div> AI Model Active
-  </div>
+  <div class="stat-item"><div class="stat-val" id="statActive" style="color:#1a202c">0</div><div class="stat-label">Active Alerts</div></div>
+  <div class="stat-item"><div class="stat-val" id="statHigh" style="color:#e53e3e">0</div><div class="stat-label">🔴 HIGH</div></div>
+  <div class="stat-item"><div class="stat-val" id="statMod" style="color:#d97706">0</div><div class="stat-label">🟡 MODERATE</div></div>
+  <div class="stat-item"><div class="stat-val" id="statLow" style="color:#059669">0</div><div class="stat-label">🟢 LOW</div></div>
+  <div class="stat-item" style="border-right:none"><div class="stat-val" id="statResolved" style="color:#718096">0</div><div class="stat-label">✓ Resolved Today</div></div>
+  <div class="ai-indicator"><div class="ai-dot"></div> AI Model Active</div>
 </div>
 
-<!-- MAIN -->
 <div id="main">
   <div id="leftpanel">
     <div id="searchbar">
       <input id="searchinput" type="text" placeholder="Search name, ID, address…" oninput="renderList()" />
       <div id="filters">
-        <button class="filter-btn active-ALL" data-filter="ALL" onclick="setFilter('ALL')">ALL</button>
-        <button class="filter-btn" data-filter="ACTIVE" onclick="setFilter('ACTIVE')">ACTIVE</button>
-        <button class="filter-btn" data-filter="HIGH" onclick="setFilter('HIGH')">HIGH</button>
-        <button class="filter-btn" data-filter="MODERATE" onclick="setFilter('MODERATE')">MOD</button>
-        <button class="filter-btn" data-filter="LOW" onclick="setFilter('LOW')">LOW</button>
+        <button class="filter-btn active-ALL" data-filter="ALL"      onclick="setFilter('ALL')">ALL</button>
+        <button class="filter-btn"            data-filter="ACTIVE"   onclick="setFilter('ACTIVE')">ACTIVE</button>
+        <button class="filter-btn"            data-filter="HIGH"     onclick="setFilter('HIGH')">HIGH</button>
+        <button class="filter-btn"            data-filter="MODERATE" onclick="setFilter('MODERATE')">MOD</button>
+        <button class="filter-btn"            data-filter="LOW"      onclick="setFilter('LOW')">LOW</button>
       </div>
     </div>
+    <div class="sort-indicator">↑ SORTED BY PRIORITY · RESOLVED HIDDEN</div>
     <div id="alertlist"></div>
   </div>
-
   <div id="rightpanel">
     <div id="empty-state">Select an alert to view details</div>
     <div id="detailpanel" style="display:none"></div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div id="toast">
   <div class="toast-title">🔴 New HIGH Alert Incoming</div>
   <div id="toastBody"></div>
@@ -343,15 +181,50 @@ const STATUS = {
   resolved:     { label:"Resolved",     color:"#059669", bg:"#f0fdf4" },
 };
 
-let alerts        = [];
+let alerts          = [];
 let statusOverrides = {};
-let selectedId    = null;
-let currentFilter = "ALL";
-let playingId     = null;
-let waveTimer     = null;
-let prevAlertIds  = new Set();
+let selectedId      = null;
+let currentFilter   = "ALL";
+let playingId       = null;
+let waveTimer       = null;
+let prevAlertIds    = new Set();
+let seenIds         = new Set(); // tracks which IDs have had their slide-in animation played
+let stableOrder     = []; // stable ordered list of IDs — prevents cards jumping
 
-// ── clock ─────────────────────────────────────────────────────
+// ── Stable order builder ──────────────────────────────────────
+// New alerts are inserted by priority rank. Existing cards stay put.
+function buildStableOrder(filtered) {
+  const filteredIds = new Set(filtered.map(a => a.id));
+
+  // remove IDs no longer visible
+  stableOrder = stableOrder.filter(id => filteredIds.has(id));
+
+  // find truly new IDs
+  const existingSet = new Set(stableOrder);
+  const newAlerts = filtered
+    .filter(a => !existingSet.has(a.id))
+    .sort((a, b) => {
+      const ra = (URGENCY[a.urgency] || URGENCY.LOW).rank;
+      const rb = (URGENCY[b.urgency] || URGENCY.LOW).rank;
+      return ra !== rb ? ra - rb : (a.timestamp || "").localeCompare(b.timestamp || "");
+    });
+
+  // insert each new alert at the correct priority position
+  newAlerts.forEach(newA => {
+    const newRank = (URGENCY[newA.urgency] || URGENCY.LOW).rank;
+    let insertAt  = stableOrder.length;
+    for (let i = 0; i < stableOrder.length; i++) {
+      const existing = filtered.find(a => a.id === stableOrder[i]);
+      if (!existing) continue;
+      if (newRank < (URGENCY[existing.urgency] || URGENCY.LOW).rank) { insertAt = i; break; }
+    }
+    stableOrder.splice(insertAt, 0, newA.id);
+  });
+
+  return stableOrder.map(id => filtered.find(a => a.id === id)).filter(Boolean);
+}
+
+// ── Clock ─────────────────────────────────────────────────────
 function updateClock() {
   document.getElementById("clock").textContent =
     new Date().toLocaleTimeString("en-SG", { hour:"2-digit", minute:"2-digit", second:"2-digit" });
@@ -359,14 +232,21 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// ── elapsed counter ───────────────────────────────────────────
+// ── Elapsed — update text in-place, no DOM rebuild ────────────
 setInterval(() => {
   alerts.forEach(a => { if (a.status !== "resolved") a.elapsed_seconds = (a.elapsed_seconds || 0) + 1; });
-  renderList();
-  if (selectedId) renderDetail();
+  alerts.forEach(a => {
+    const el = document.getElementById("elapsed-" + a.id);
+    if (el) el.textContent = formatElapsed(a.elapsed_seconds);
+  });
+  const detailEl = document.getElementById("detail-elapsed");
+  const selAlert = alerts.find(x => x.id === selectedId);
+  if (detailEl && selAlert) {
+    detailEl.textContent = "Alert at " + (selAlert.time || selAlert.timestamp || "") + " · " + formatElapsed(selAlert.elapsed_seconds);
+  }
 }, 1000);
 
-// ── fetch alerts from Flask ───────────────────────────────────
+// ── Fetch ─────────────────────────────────────────────────────
 async function fetchAlerts() {
   try {
     const res  = await fetch("/api/alerts");
@@ -374,42 +254,33 @@ async function fetchAlerts() {
 
     const incoming = data.map(a => ({
       ...a,
-      status:     statusOverrides[a.id] || a.status || "pending",
-      conditions: a.conditions || [],
-      confidence: a.confidence || 0.85,
+      status:          statusOverrides[a.id] || a.status || "pending",
+      conditions:      a.conditions || [],
+      confidence:      a.confidence || 0.85,
       elapsed_seconds: a.elapsed_seconds || 0,
-      signals: { transcript: a.transcript || "[No transcript]" }
+      signals:         { transcript: a.transcript || "[No transcript]" }
     }));
 
-    // detect brand-new HIGH alerts for toast
-    incoming.forEach(a => {
-      if (!prevAlertIds.has(a.id) && a.urgency === "HIGH") {
-        showToast(a);
-      }
-    });
+    // toast new HIGH alerts
+    incoming.forEach(a => { if (!prevAlertIds.has(a.id) && a.urgency === "HIGH") showToast(a); });
     prevAlertIds = new Set(incoming.map(a => a.id));
 
-    // preserve elapsed_seconds for existing alerts
-    const existing = {};
-    alerts.forEach(a => { existing[a.id] = a.elapsed_seconds; });
-    alerts = incoming.map(a => ({
-      ...a,
-      elapsed_seconds: existing[a.id] !== undefined ? existing[a.id] : a.elapsed_seconds
-    }));
+    // preserve elapsed
+    const existingElapsed = {};
+    alerts.forEach(a => { existingElapsed[a.id] = a.elapsed_seconds; });
+    alerts = incoming.map(a => ({ ...a, elapsed_seconds: existingElapsed[a.id] !== undefined ? existingElapsed[a.id] : a.elapsed_seconds }));
 
-    // auto-select first alert if none selected
-    if (!selectedId && alerts.length > 0) {
-      selectedId = alerts[0].id;
+    if (!selectedId) {
+      const first = alerts.find(a => a.status !== "resolved");
+      if (first) selectedId = first.id;
     }
 
     renderList();
     if (selectedId) renderDetail();
-  } catch(e) {
-    console.error("Failed to fetch alerts:", e);
-  }
+  } catch(e) { console.error("Fetch failed:", e); }
 }
 
-// ── stats ─────────────────────────────────────────────────────
+// ── Stats ─────────────────────────────────────────────────────
 function updateStats() {
   const active = alerts.filter(a => a.status !== "resolved");
   document.getElementById("statActive").textContent   = active.length;
@@ -417,320 +288,207 @@ function updateStats() {
   document.getElementById("statMod").textContent      = active.filter(a => a.urgency === "MODERATE").length;
   document.getElementById("statLow").textContent      = active.filter(a => a.urgency === "LOW").length;
   document.getElementById("statResolved").textContent = alerts.filter(a => a.status === "resolved").length;
-
-  const highCount = active.filter(a => a.urgency === "HIGH").length;
+  const hc = active.filter(a => a.urgency === "HIGH").length;
   const ind = document.getElementById("criticalIndicator");
-  if (highCount > 0) {
-    ind.style.display = "flex";
-    document.getElementById("criticalText").textContent = `${highCount} CRITICAL ACTIVE`;
-  } else {
-    ind.style.display = "none";
-  }
+  ind.style.display = hc > 0 ? "flex" : "none";
+  if (hc > 0) document.getElementById("criticalText").textContent = hc + " CRITICAL ACTIVE";
 }
 
-// ── filter ────────────────────────────────────────────────────
+// ── Filter ────────────────────────────────────────────────────
 function setFilter(f) {
   currentFilter = f;
   document.querySelectorAll(".filter-btn").forEach(b => {
     b.className = "filter-btn";
     if (b.dataset.filter === f) b.classList.add("active-" + f);
   });
+  stableOrder = []; // reset order on filter change
   renderList();
 }
 
 function getFiltered() {
-  const q = document.getElementById("searchinput").value.toLowerCase();
-  return [...alerts]
-    .sort((a, b) => (URGENCY[a.urgency] || URGENCY.LOW).rank - (URGENCY[b.urgency] || URGENCY.LOW).rank)
-    .filter(a => {
-      const urg = a.urgency || "LOW";
-      const mf =
-        currentFilter === "ALL" ||
-        (currentFilter === "ACTIVE" && a.status !== "resolved") ||
-        urg === currentFilter;
-      const ms =
-        !q ||
-        (a.name || "").toLowerCase().includes(q) ||
-        (a.id   || "").toLowerCase().includes(q) ||
-        (a.address || "").toLowerCase().includes(q);
-      return mf && ms;
-    });
+  const q = (document.getElementById("searchinput").value || "").toLowerCase();
+  return alerts.filter(a => {
+    const urg = a.urgency || "LOW";
+    // Always hide resolved alerts from the main queue list.
+    if (a.status === "resolved") return false;
+    const mf = currentFilter === "ALL" ||
+               (currentFilter === "ACTIVE" && a.status !== "resolved") ||
+               urg === currentFilter;
+    const ms = !q || (a.name||"").toLowerCase().includes(q) || (a.id||"").toLowerCase().includes(q) || (a.address||"").toLowerCase().includes(q);
+    return mf && ms;
+  });
 }
 
 function formatElapsed(s) {
   s = s || 0;
   if (s < 60) return s + "s ago";
-  return Math.floor(s / 60) + "m " + (s % 60) + "s ago";
+  return Math.floor(s/60) + "m " + (s%60) + "s ago";
 }
 
-// ── render list ───────────────────────────────────────────────
+// ── Render list — stable DOM, no full rebuild ─────────────────
 function renderList() {
   updateStats();
-  const list  = document.getElementById("alertlist");
-  const items = getFiltered();
+  const filtered = getFiltered();
+  const ordered  = buildStableOrder(filtered);
+  const list     = document.getElementById("alertlist");
 
-  if (items.length === 0) {
-    list.innerHTML = '<div class="no-alerts">No alerts yet.<br/>Waiting for PAB activations…</div>';
+  if (ordered.length === 0) {
+    list.innerHTML = '<div class="no-alerts">No active alerts.<br/>Waiting for PAB activations…</div>';
     return;
   }
 
-  list.innerHTML = items.map(a => {
-    const urg   = a.urgency || "LOW";
-    const cfg   = URGENCY[urg] || URGENCY.LOW;
-    const scfg  = STATUS[a.status] || STATUS.pending;
-    const sel   = a.id === selectedId;
-    const conf  = Math.round((a.confidence || 0.85) * 100);
-    const confColor = conf >= 85 ? "#e53e3e" : conf >= 70 ? "#d97706" : "#059669";
-    const transcript = (a.signals && a.signals.transcript) ? a.signals.transcript : "[No transcript]";
+  // map existing cards
+  const existingCards = {};
+  list.querySelectorAll(".alert-card[data-id]").forEach(el => { existingCards[el.dataset.id] = el; });
 
-    return `
-      <div class="alert-card ${sel ? 'selected' : ''}"
-        onclick="selectAlert('${a.id}')"
-        style="border-left:4px solid ${cfg.color};${sel ? 'background:' + cfg.light + ';border-color:' + cfg.color + ';' : ''}">
-        <div class="card-top">
-          <div>
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
-              <span class="card-name">${a.name || "Unknown"}</span>
-              <span style="font-size:11px;color:#718096">Age ${a.age || "?"}</span>
-            </div>
-            <div class="card-meta">${a.id} · ${a.time || ""}</div>
-          </div>
-          <div class="card-right">
-            <span class="urgency-badge" style="color:${cfg.color};background:${cfg.bg};border-color:${cfg.border}">${cfg.icon} ${urg}</span>
-            <span class="card-elapsed">${formatElapsed(a.elapsed_seconds)}</span>
-          </div>
-        </div>
-        <div class="card-transcript">"${transcript}"</div>
-        <div class="card-bottom">
-          <span class="status-chip" style="color:${scfg.color};background:${scfg.bg}">● ${scfg.label}</span>
-          <div class="conf-row">
-            <div class="conf-track"><div class="conf-fill" style="width:${conf}%;background:${confColor}"></div></div>
-            <span class="conf-label" style="color:${confColor}">${conf}%</span>
-          </div>
-        </div>
-      </div>`;
-  }).join("");
+  // remove stale cards
+  const visibleIds = new Set(ordered.map(a => a.id));
+  Object.keys(existingCards).forEach(id => { if (!visibleIds.has(id)) existingCards[id].remove(); });
+
+  // upsert cards in stable order
+  ordered.forEach((a, index) => {
+    const cfg   = URGENCY[a.urgency || "LOW"] || URGENCY.LOW;
+    const scfg  = STATUS[a.status] || STATUS.pending;
+    const conf  = Math.round((a.confidence || 0.85) * 100);
+    const cc    = conf >= 85 ? "#e53e3e" : conf >= 70 ? "#d97706" : "#059669";
+    const sel   = a.id === selectedId;
+    const tx    = (a.signals && a.signals.transcript) ? a.signals.transcript : "[No transcript]";
+    const isNew = !seenIds.has(a.id);
+    if (isNew) seenIds.add(a.id);
+
+    let card = existingCards[a.id];
+    if (!card) {
+      card = document.createElement("div");
+      card.dataset.id = a.id;
+      card.onclick    = () => selectAlert(a.id);
+      if (isNew) card.classList.add("is-new");
+    }
+
+    card.className = "alert-card" + (sel ? " selected" : "");
+    card.style.cssText = "border-left:4px solid " + cfg.color + ";background:" + (sel ? cfg.light : "#fff") + ";";
+
+    card.innerHTML =
+      '<div class="card-top">' +
+        '<div>' +
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">' +
+            '<span class="card-name">' + (a.name||"Unknown") + '</span>' +
+            '<span style="font-size:11px;color:#718096">Age ' + (a.age||"?") + '</span>' +
+          '</div>' +
+          '<div class="card-meta">' + (a.id||"") + ' · ' + (a.time||"") + '</div>' +
+        '</div>' +
+        '<div class="card-right">' +
+          '<span class="urgency-badge" style="color:'+cfg.color+';background:'+cfg.bg+';border-color:'+cfg.border+'">' + cfg.icon + ' ' + (a.urgency||"LOW") + '</span>' +
+          '<span class="card-elapsed" id="elapsed-' + a.id + '">' + formatElapsed(a.elapsed_seconds) + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card-transcript">"' + tx + '"</div>' +
+      '<div class="card-bottom">' +
+        '<span class="status-chip" style="color:'+scfg.color+';background:'+scfg.bg+'">● ' + scfg.label + '</span>' +
+        '<div class="conf-row">' +
+          '<div class="conf-track"><div class="conf-fill" style="width:'+conf+'%;background:'+cc+'"></div></div>' +
+          '<span class="conf-label" style="color:'+cc+'">' + conf + '%</span>' +
+        '</div>' +
+      '</div>';
+
+    // insert at correct position without moving existing cards unnecessarily
+    const atIndex = list.children[index];
+    if (atIndex !== card) list.insertBefore(card, atIndex || null);
+  });
 }
 
 function selectAlert(id) {
   selectedId = id;
-  renderList();
+  document.querySelectorAll(".alert-card[data-id]").forEach(el => {
+    const a   = alerts.find(x => x.id === el.dataset.id);
+    const cfg = URGENCY[(a && a.urgency) || "LOW"] || URGENCY.LOW;
+    const sel = el.dataset.id === id;
+    el.classList.toggle("selected", sel);
+    el.style.background = sel ? cfg.light : "#fff";
+  });
   renderDetail();
 }
 
-// ── render detail ─────────────────────────────────────────────
+// ── Detail panel ──────────────────────────────────────────────
 function renderDetail() {
   const a = alerts.find(x => x.id === selectedId);
   if (!a) return;
-
-  document.getElementById("empty-state").style.display  = "none";
+  document.getElementById("empty-state").style.display = "none";
   const panel = document.getElementById("detailpanel");
   panel.style.display = "block";
 
-  const urg  = a.urgency || "LOW";
-  const cfg  = URGENCY[urg] || URGENCY.LOW;
+  const cfg  = URGENCY[a.urgency || "LOW"] || URGENCY.LOW;
   const conf = Math.round((a.confidence || 0.85) * 100);
-
-  const bannerText = {
-    HIGH:     "⚠ Immediate response required — dispatch SCDF / on-call responder now",
-    MODERATE: "⚡ Timely response needed — contact next-of-kin and assess within 10 min",
-    LOW:      "✓ Non-critical — welfare check call recommended within 30 min",
-  }[urg] || "Review alert details below";
-
+  const bannerText = { HIGH:"⚠ Immediate response required — dispatch SCDF / on-call responder now", MODERATE:"⚡ Timely response needed — assess within 10 min", LOW:"✓ Non-critical — welfare check recommended within 30 min" }[a.urgency] || "Review details below";
   const isPlaying = playingId === a.id;
-
-  const waveBars = Array.from({length: 28}, (_, i) => {
-    const h = 4 + Math.sin(i * 0.8) * 5 + 3;
-    return `<div class="wbar ${isPlaying ? 'active' : ''}" style="height:${h}px;animation:${isPlaying ? 'wave ' + (0.3 + (i % 5) * 0.08) + 's ease-in-out infinite alternate' : 'none'}"></div>`;
-  }).join("");
-
-  const statusBtns = ["pending","acknowledged","resolved"].map(s => {
-    const scfg  = STATUS[s];
-    const active = a.status === s;
-    return `<button class="status-toggle"
-      style="border:1px solid ${scfg.color};background:${active ? scfg.color : '#fff'};color:${active ? '#fff' : scfg.color}"
-      onclick="setStatus('${a.id}','${s}')">${scfg.label}</button>`;
-  }).join("");
-
-  const actionBtns = [
-    { color:"#2b6cb0", label:"📞 Call Senior" },
-    { color:"#276749", label:"🚑 Dispatch SCDF" },
-    { color:"#744210", label:"📱 Notify NOK" },
-    { color:"#553c9a", label:"👷 Send Volunteer" },
-  ].map(b => `<button class="action-btn" style="color:${b.color};border-color:${b.color}" onclick="flashAction(this,'${b.color}')">${b.label}</button>`).join("");
-
-  // conditions
-  const conditionTags = (a.conditions || []).length > 0
-    ? a.conditions.map(c => `<span class="condition-tag">${c}</span>`).join("")
-    : '<span style="font-size:12px;color:#a0aec0">None on record</span>';
-
-  // medications
-  const meds = a.current_medications || [];
-  const medHtml = meds.length > 0
-    ? `<div class="med-list">${meds.map(m => `<div class="med-item">💊 ${m}</div>`).join("")}</div>`
-    : '<span style="font-size:12px;color:#a0aec0">None on record</span>';
-
-  // allergies
-  const allergies = a.allergies || [];
-  const allergyHtml = allergies.length > 0
-    ? allergies.map(al => `<span class="allergy-tag">⚠ ${al}</span>`).join("")
-    : '<span style="font-size:12px;color:#a0aec0">None recorded</span>';
-
-  // keywords
-  const kwHtml = a.keywords_summary && a.keywords_summary !== "None detected"
-    ? `<div class="keyword-row">
-        ${(a.keywords_critical ? `<span class="kw-tag" style="color:#e53e3e;background:#fff5f5;border-color:#feb2b2">🔴 ${a.keywords_critical}</span>` : "")}
-        ${(a.keywords_high     ? `<span class="kw-tag" style="color:#d97706;background:#fffbeb;border-color:#fcd34d">🟠 ${a.keywords_high}</span>`     : "")}
-        ${(a.keywords_medium   ? `<span class="kw-tag" style="color:#059669;background:#f0fdf4;border-color:#6ee7b7">🟡 ${a.keywords_medium}</span>`   : "")}
-      </div>`
+  const waveBars  = Array.from({length:28},(_,i)=>'<div class="wbar'+(isPlaying?' active':'')+'" style="height:'+(4+Math.sin(i*.8)*5+3)+'px;animation:'+(isPlaying?'wave '+(0.3+(i%5)*0.08)+'s ease-in-out infinite alternate':'none')+'"></div>').join("");
+  const statusBtns = ["pending","acknowledged","resolved"].map(s=>{const sc=STATUS[s];const act=a.status===s;return '<button class="status-toggle" style="border:1px solid '+sc.color+';background:'+(act?sc.color:"#fff")+';color:'+(act?"#fff":sc.color)+'" onclick="setStatus(\''+a.id+'\',\''+s+'\')">'+sc.label+'</button>';}).join("");
+  const actionBtns = [{color:"#2b6cb0",label:"📞 Call Senior"},{color:"#276749",label:"🚑 Dispatch SCDF"},{color:"#744210",label:"📱 Notify NOK"},{color:"#553c9a",label:"👷 Send Volunteer"}].map(b=>'<button class="action-btn" style="color:'+b.color+';border-color:'+b.color+'" onclick="flashAction(this,\''+b.color+'\')">'+b.label+'</button>').join("");
+  const condTags = (a.conditions||[]).length>0 ? a.conditions.map(c=>'<span class="condition-tag">'+c+'</span>').join("") : '<span style="font-size:12px;color:#a0aec0">None on record</span>';
+  const medHtml  = (a.current_medications||[]).length>0 ? '<div class="med-list">'+(a.current_medications).map(m=>'<div class="med-item">💊 '+m+'</div>').join("")+'</div>' : '<span style="font-size:12px;color:#a0aec0">None on record</span>';
+  const algHtml  = (a.allergies||[]).length>0 ? a.allergies.map(al=>'<span class="allergy-tag">⚠ '+al+'</span>').join("") : '<span style="font-size:12px;color:#a0aec0">None recorded</span>';
+  const kwHtml   = a.keywords_summary && a.keywords_summary!=="None detected"
+    ? '<div class="keyword-row">'+(a.keywords_critical?'<span class="kw-tag" style="color:#e53e3e;background:#fff5f5;border-color:#feb2b2">🔴 '+a.keywords_critical+'</span>':"")+(a.keywords_high?'<span class="kw-tag" style="color:#d97706;background:#fffbeb;border-color:#fcd34d">🟠 '+a.keywords_high+'</span>':"")+(a.keywords_medium?'<span class="kw-tag" style="color:#059669;background:#f0fdf4;border-color:#6ee7b7">🟡 '+a.keywords_medium+'</span>':"")+'</div>'
     : '<span style="font-size:12px;color:#a0aec0">No risk keywords detected</span>';
+  const tx = (a.signals && a.signals.transcript) ? a.signals.transcript : "[No transcript]";
+  const resolvedBanner = a.status === "resolved" ? '<div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;font-weight:600;color:#276749">✓ This alert has been resolved and removed from the active queue.</div>' : "";
 
-  const transcript = (a.signals && a.signals.transcript) ? a.signals.transcript : "[No transcript]";
-
-  panel.innerHTML = `
-    <div class="detail-header">
-      <div class="detail-top">
-        <div>
-          <div class="case-id">CASE ${a.id}</div>
-          <div class="case-name">${a.name || "Unknown Patient"}</div>
-          <div class="case-sub">Age ${a.age || "?"} · Alert at ${a.time || a.timestamp || ""}</div>
-        </div>
-        <div class="urgency-ring" style="background:${cfg.bg};border:3px solid ${cfg.color}">
-          <div class="ring-label" style="color:${cfg.color}">${urg}</div>
-          <div class="ring-conf" style="color:${cfg.color}">${conf}% conf.</div>
-        </div>
-      </div>
-      <div class="urgency-banner" style="background:${cfg.bg};border-color:${cfg.color};color:${cfg.color}">${bannerText}</div>
-    </div>
-
-    <div class="detail-section">
-      <div class="section-label">👤 Patient Information</div>
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="info-item-label">CONTACT</div>
-          <div class="info-item-val">${a.contact || "—"}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-item-label">MOBILITY</div>
-          <div class="info-item-val">${a.mobility || "—"}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-item-label">LANGUAGE</div>
-          <div class="info-item-val">${a.language || "—"}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-item-label">EMERGENCY CONTACT</div>
-          <div class="info-item-val">${a.emergency_contact || "—"}</div>
-        </div>
-        <div class="info-item full">
-          <div class="info-item-label">ALLERGIES</div>
-          <div style="margin-top:4px">${allergyHtml}</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="detail-section">
-      <div class="section-label">📍 Location</div>
-      <div class="address-box">
-        <div>
-          <div class="address-text">${a.address || "Address not available"}</div>
-          <div class="address-sub">Singapore</div>
-        </div>
-        <button class="map-btn" onclick="window.open('https://maps.google.com?q=${encodeURIComponent(a.address || '')}','_blank')">Open Map ↗</button>
-      </div>
-    </div>
-
-    <div class="detail-section">
-      <div class="section-label">🎙 Audio Alert</div>
-      <div class="audio-box ${isPlaying ? 'playing' : ''}" id="audioBox">
-        <div class="audio-top">
-          <button class="play-btn" style="background:${isPlaying ? '#e53e3e' : '#2b6cb0'}" onclick="togglePlay('${a.id}')">
-            ${isPlaying ? '⏹' : '▶'}
-          </button>
-          <div style="flex:1">
-            <div class="audio-filename">${a.audioFile || a.id}</div>
-            <div class="waveform">${waveBars}</div>
-          </div>
-        </div>
-        <div class="transcript-box">
-          <span class="transcript-prefix">AI TRANSCRIPT: </span>"${transcript}"
-        </div>
-      </div>
-    </div>
-
-    <div class="detail-section">
-      <div class="section-label">🔑 Risk Keywords</div>
-      ${kwHtml}
-    </div>
-
-    <div class="detail-section">
-      <div class="section-label">🏥 Medical History</div>
-      <div class="conditions-row">${conditionTags}</div>
-    </div>
-
-    <div class="detail-section">
-      <div class="section-label">💊 Current Medications</div>
-      ${medHtml}
-    </div>
-
-    <div class="detail-section">
-      <div class="section-label">⚡ Responder Actions</div>
-      <div class="actions-grid">${actionBtns}</div>
-      <div class="status-btns">${statusBtns}</div>
-    </div>
-  `;
+  panel.innerHTML = resolvedBanner +
+    '<div class="detail-header"><div class="detail-top"><div><div class="case-id">CASE '+a.id+'</div><div class="case-name">'+(a.name||"Unknown Patient")+'</div><div class="case-sub" id="detail-elapsed">Alert at '+(a.time||a.timestamp||"")+" · "+formatElapsed(a.elapsed_seconds)+'</div></div><div class="urgency-ring" style="background:'+cfg.bg+';border:3px solid '+cfg.color+'"><div class="ring-label" style="color:'+cfg.color+'">'+(a.urgency||"LOW")+'</div><div class="ring-conf" style="color:'+cfg.color+'">'+conf+'% conf.</div></div></div><div class="urgency-banner" style="background:'+cfg.bg+';border-color:'+cfg.color+';color:'+cfg.color+'">'+bannerText+'</div></div>' +
+    '<div class="detail-section"><div class="section-label">👤 Patient Information</div><div class="info-grid"><div class="info-item"><div class="info-item-label">CONTACT</div><div class="info-item-val">'+(a.contact||"—")+'</div></div><div class="info-item"><div class="info-item-label">MOBILITY</div><div class="info-item-val">'+(a.mobility||"—")+'</div></div><div class="info-item"><div class="info-item-label">LANGUAGE</div><div class="info-item-val">'+(a.language||"—")+'</div></div><div class="info-item"><div class="info-item-label">EMERGENCY CONTACT</div><div class="info-item-val">'+(a.emergency_contact||"—")+'</div></div><div class="info-item full"><div class="info-item-label">ALLERGIES</div><div style="margin-top:4px">'+algHtml+'</div></div></div></div>' +
+    '<div class="detail-section"><div class="section-label">📍 Location</div><div class="address-box"><div><div class="address-text">'+(a.address||"Address not available")+'</div><div class="address-sub">Singapore</div></div><button class="map-btn" onclick="window.open(\'https://maps.google.com?q='+encodeURIComponent(a.address||"")+'\',\'_blank\')">Open Map ↗</button></div></div>' +
+    '<div class="detail-section"><div class="section-label">🎙 Audio Alert</div><div class="audio-box'+(isPlaying?" playing":"")+'"><div class="audio-top"><button class="play-btn" style="background:'+(isPlaying?"#e53e3e":"#2b6cb0")+'" onclick="togglePlay(\''+a.id+'\')">'+(isPlaying?"⏹":"▶")+'</button><div style="flex:1"><div class="audio-filename">'+(a.audioFile||a.id)+'</div><div class="waveform">'+waveBars+'</div></div></div><div class="transcript-box"><span class="transcript-prefix">AI TRANSCRIPT: </span>"'+tx+'"</div></div></div>' +
+    '<div class="detail-section"><div class="section-label">🔑 Risk Keywords</div>'+kwHtml+'</div>' +
+    '<div class="detail-section"><div class="section-label">🏥 Medical History</div><div class="conditions-row">'+condTags+'</div></div>' +
+    '<div class="detail-section"><div class="section-label">💊 Current Medications</div>'+medHtml+'</div>' +
+    '<div class="detail-section"><div class="section-label">⚡ Responder Actions</div><div class="actions-grid">'+actionBtns+'</div><div class="status-btns">'+statusBtns+'</div></div>';
 }
 
-// ── actions ───────────────────────────────────────────────────
+// ── Actions ───────────────────────────────────────────────────
 function flashAction(btn, color) {
   const orig = btn.innerHTML;
-  btn.style.background = color;
-  btn.style.color = "#fff";
-  btn.innerHTML = "✓ Sent";
-  setTimeout(() => {
-    btn.style.background = "#fff";
-    btn.style.color = color;
-    btn.innerHTML = orig;
-  }, 1500);
+  btn.style.background = color; btn.style.color = "#fff"; btn.innerHTML = "✓ Sent";
+  setTimeout(() => { btn.style.background = "#fff"; btn.style.color = color; btn.innerHTML = orig; }, 1500);
 }
 
 function setStatus(id, status) {
   statusOverrides[id] = status;
-  alerts = alerts.map(a => a.id === id ? { ...a, status } : a);
+  alerts = alerts.map(a => a.id === id ? {...a, status} : a);
   const alert = alerts.find(a => a.id === id);
   if (alert && alert.report_file) {
-    fetch("/api/alerts/status", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ report_file: alert.report_file, status })
-    });
+    fetch("/api/alerts/status", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({report_file:alert.report_file, status}) });
   }
-  renderList();
-  renderDetail();
+
+  // when resolved: remove from stable order, auto-select next active alert
+  if (status === "resolved") {
+    stableOrder = stableOrder.filter(sid => sid !== id);
+    if (selectedId === id) {
+      selectedId = null;
+      const next = alerts.find(a => a.status !== "resolved" && a.id !== id);
+      if (next) selectedId = next.id;
+    }
+    renderList();
+    if (selectedId) renderDetail();
+    else { document.getElementById("detailpanel").style.display = "none"; document.getElementById("empty-state").style.display = "flex"; }
+  } else {
+    renderList();
+    renderDetail();
+  }
 }
 
 function togglePlay(id) {
-  if (playingId === id) {
-    playingId = null;
-    clearTimeout(waveTimer);
-  } else {
-    playingId = id;
-    clearTimeout(waveTimer);
-    waveTimer = setTimeout(() => { playingId = null; renderDetail(); }, 4000);
-  }
+  playingId = playingId === id ? null : id;
+  clearTimeout(waveTimer);
+  if (playingId) waveTimer = setTimeout(() => { playingId = null; renderDetail(); }, 4000);
   renderDetail();
 }
 
-// ── toast ─────────────────────────────────────────────────────
 function showToast(a) {
   const toast = document.getElementById("toast");
-  document.getElementById("toastBody").textContent =
-    (a.name || "Unknown") + ", Age " + (a.age || "?") + ' — "' + ((a.signals && a.signals.transcript) || "") + '"';
+  document.getElementById("toastBody").textContent = (a.name||"Unknown") + ", Age " + (a.age||"?") + ' — "' + ((a.signals&&a.signals.transcript)||"") + '"';
   toast.style.display = "block";
   setTimeout(() => { toast.style.display = "none"; }, 5000);
 }
 
-// ── init ──────────────────────────────────────────────────────
 fetchAlerts();
 setInterval(fetchAlerts, 5000);
 </script>

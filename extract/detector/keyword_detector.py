@@ -22,7 +22,7 @@ CRITICAL = [
 # HIGH (serious human injury, needs urgent attention)
 HIGH = [
     # human physical injury
-    "fell down", "fallen", "fall", "can't get up", "cannot get up",
+    "fell down", "fallen", "fall", "can't get up", "cannot get up","fell"
     "broken", "broke","fracture", "fractured","injured", "injury", "hurt myself",
     "bleeding", "blood", "cut myself", "bruised",
     "dizzy", "fainted", "faint", "nausea", "vomiting",

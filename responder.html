@@ -336,8 +336,10 @@ updateClock();
 // Elapsed timers
 setInterval(() => {
   alerts.forEach(a => { if (a.status !== "resolved") a.elapsed++; });
-  renderList();
-  if (selectedId) renderDetail();
+  alerts.forEach(a => {
+    const el = document.getElementById("elapsed-" + a.id);
+    if (el) el.textContent = formatElapsed(a.elapsed);
+  });
 }, 1000);
 
 // Stats
@@ -379,6 +381,7 @@ function getFiltered() {
   return [...alerts]
     .sort((a,b) => URGENCY[a.urgency].rank - URGENCY[b.urgency].rank)
     .filter(a => {
+      if (a.status === "resolved") return false;
       const mf = currentFilter === "ALL" ||
         (currentFilter === "ACTIVE" && a.status !== "resolved") ||
         a.urgency === currentFilter;
@@ -417,7 +420,7 @@ function renderList() {
         </div>
         <div class="card-right">
           <span class="urgency-badge" style="color:${cfg.color};background:${cfg.bg};border-color:${cfg.border}">${cfg.icon} ${a.urgency}</span>
-          <span class="card-elapsed">${formatElapsed(a.elapsed)}</span>
+          <span class="card-elapsed" id="elapsed-${a.id}">${formatElapsed(a.elapsed)}</span>
         </div>
       </div>
       <div class="card-transcript">"${a.signals.transcript}"</div>

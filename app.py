@@ -77,8 +77,12 @@ def parse_risk_report(report_path: Path) -> dict | None:
 
         # generate a stable case ID from filename
         stem = report_path.stem.replace("_risk_report", "")
-        data["id"]     = stem[-8:].upper()
-        data["status"] = "pending"
+        data["id"] = stem[-8:].upper()
+        status_path = report_path.with_suffix(".status")
+        if status_path.exists():
+            data["status"] = status_path.read_text(encoding="utf-8").strip() or "pending"
+        else:
+            data["status"] = "pending"
         data["report_file"] = str(report_path)
 
         # parse time display
