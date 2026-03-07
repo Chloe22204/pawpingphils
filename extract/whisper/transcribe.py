@@ -55,6 +55,6 @@ with open(output_path, "w", encoding="utf-8") as f:
 print(f"Transcript saved to: {output_path}")
 
 # ── keyword detection + ranking ───────────────────────────────
-detection: dict = analyse(transcript, audio_filename=os.path.basename(audio_file))
+detection = analyse(transcript, audio_filename=os.path.basename(audio_file), audio_path=audio_file)
 print_alert(detection)
 save_report(detection, audio_file)

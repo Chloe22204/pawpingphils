@@ -1,5 +1,5 @@
 from datetime import datetime
-import os
+from detector.profile_loader import load_profile, format_profile_block
 
 # ── keyword tiers ────────────────────────────────────────────
 CRITICAL = [
@@ -38,24 +38,20 @@ def get_priority(tier: str) -> str:
     }.get(tier, "🟢 LOW")
 
 # ── main detector ─────────────────────────────────────────────
-def analyse(transcript: str, audio_filename: str = "unknown") -> dict:
+def analyse(transcript: str, audio_filename: str = "unknown", audio_path: str = "") -> dict:
     text = transcript.lower()
     matched: dict = {"critical": [], "high": [], "medium": []}
 
-    # collect unique matches only — duplicates are ignored
     for kw in CRITICAL:
         if kw in text and kw not in matched["critical"]:
             matched["critical"].append(kw)
-
     for kw in HIGH:
         if kw in text and kw not in matched["high"]:
             matched["high"].append(kw)
-
     for kw in MEDIUM:
         if kw in text and kw not in matched["medium"]:
             matched["medium"].append(kw)
 
-    # ── urgency based on HIGHEST tier found, not cumulative score ──
     if matched["critical"]:
         top_tier = "critical"
     elif matched["high"]:
@@ -65,6 +61,9 @@ def analyse(transcript: str, audio_filename: str = "unknown") -> dict:
     else:
         top_tier = "low"
 
+    # load profile at analysis time
+    profile = load_profile(audio_path)
+
     return {
         "file":           audio_filename,
         "timestamp":      datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -73,38 +72,60 @@ def analyse(transcript: str, audio_filename: str = "unknown") -> dict:
         "top_tier":       top_tier,
         "matched":        matched,
         "keywords_found": matched["critical"] + matched["high"] + matched["medium"],
+        "profile":        profile,   # ← attach profile to result
     }
 
-# ── print alert to terminal ───────────────────────────────────
 def print_alert(result: dict) -> None:
+    profile_block = format_profile_block(result.get("profile", {}))
     print("\n" + "="*52)
     print(f"  {result['priority']}")
     print("="*52)
     print(f"  File      : {result['file']}")
     print(f"  Time      : {result['timestamp']}")
-    print(f"  Transcript: {result['transcript']}")
     print()
+    print("  PATIENT INFORMATION")
+    print("  " + "-"*40)
+    print(profile_block)
+    print()
+    print("  TRANSCRIPT")
+    print("  " + "-"*40)
+    print(f"  {result['transcript']}")
+    print()
+    print("  KEYWORDS DETECTED")
+    print("  " + "-"*40)
     if result["matched"]["critical"]:
-        print(f"  🔴 Critical keywords : {', '.join(result['matched']['critical'])}")
+        print(f"  🔴 Critical : {', '.join(result['matched']['critical'])}")
     if result["matched"]["high"]:
-        print(f"  🟠 High keywords     : {', '.join(result['matched']['high'])}")
+        print(f"  🟠 High     : {', '.join(result['matched']['high'])}")
     if result["matched"]["medium"]:
-        print(f"  🟡 Medium keywords   : {', '.join(result['matched']['medium'])}")
+        print(f"  🟡 Medium   : {', '.join(result['matched']['medium'])}")
     if not result["keywords_found"]:
         print("  No risk keywords detected.")
     print("="*52 + "\n")
 
-# ── save risk report ──────────────────────────────────────────
 def save_report(result: dict, audio_path: str) -> None:
+    profile_block = format_profile_block(result.get("profile", {}))
     report_path = audio_path.replace(".webm", "_risk_report.txt")
+
     with open(report_path, "w", encoding="utf-8") as f:
-        f.write("PAB RISK REPORT\n")
-        f.write(f"{'='*40}\n")
-        f.write(f"File      : {result['file']}\n")
-        f.write(f"Timestamp : {result['timestamp']}\n")
-        f.write(f"Priority  : {result['priority']}\n")
-        f.write(f"\nTranscript:\n{result['transcript']}\n")
-        f.write("\nKeywords Detected:\n")
+        f.write("=" * 52 + "\n")
+        f.write("  PAB EMERGENCY RISK REPORT\n")
+        f.write("=" * 52 + "\n\n")
+
+        f.write(f"  Priority  : {result['priority']}\n")
+        f.write(f"  File      : {result['file']}\n")
+        f.write(f"  Timestamp : {result['timestamp']}\n\n")
+
+        f.write("  PATIENT INFORMATION\n")
+        f.write("  " + "-" * 40 + "\n")
+        f.write(profile_block + "\n\n")
+
+        f.write("  TRANSCRIPT\n")
+        f.write("  " + "-" * 40 + "\n")
+        f.write(f"  {result['transcript']}\n\n")
+
+        f.write("  KEYWORDS DETECTED\n")
+        f.write("  " + "-" * 40 + "\n")
         if result["matched"]["critical"]:
             f.write(f"  CRITICAL : {', '.join(result['matched']['critical'])}\n")
         if result["matched"]["high"]:
@@ -113,4 +134,9 @@ def save_report(result: dict, audio_path: str) -> None:
             f.write(f"  MEDIUM   : {', '.join(result['matched']['medium'])}\n")
         if not result["keywords_found"]:
             f.write("  None detected.\n")
+
+        f.write("\n" + "=" * 52 + "\n")
+
     print(f"  Risk report saved to: {report_path}")
+
+

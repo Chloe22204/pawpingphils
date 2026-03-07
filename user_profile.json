@@ -1,0 +1,45 @@
+{
+  "users": [
+    {
+      "id": "user_001",
+      "name": "Tan Ah Kow",
+      "password": "1234",
+      "age": 78,
+      "contact": "+65 9123 4567",
+      "emergency_contact": {
+        "name": "Tan Wei Ming (Son)",
+        "number": "+65 9876 5432"
+      },
+      "address": "Blk 123 Tampines Street 45, #08-12, Singapore 520123",
+      "medical_history": ["Hypertension", "Type 2 Diabetes", "Coronary Artery Disease"],
+      "current_medications": [
+        "Metformin 500mg (twice daily)",
+        "Amlodipine 5mg (once daily)",
+        "Aspirin 100mg (once daily)"
+      ],
+      "allergies": ["Penicillin"],
+      "mobility": "Uses walking stick",
+      "language": "Mandarin / Hokkien"
+    },
+    {
+      "id": "user_002",
+      "name": "Lim Bee Hoon",
+      "password": "5678",
+      "age": 82,
+      "contact": "+65 9234 5678",
+      "emergency_contact": {
+        "name": "Lim Siew Ling (Daughter)",
+        "number": "+65 9765 4321"
+      },
+      "address": "Blk 456 Bedok North Ave 3, #03-08, Singapore 460456",
+      "medical_history": ["Osteoporosis", "Glaucoma"],
+      "current_medications": [
+        "Calcium 600mg (once daily)",
+        "Timolol eye drops (twice daily)"
+      ],
+      "allergies": [],
+      "mobility": "Uses wheelchair",
+      "language": "Cantonese / English"
+    }
+  ]
+}
