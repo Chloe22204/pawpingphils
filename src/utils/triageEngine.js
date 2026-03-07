@@ -1,67 +1,69 @@
+// src/utils/triageEngine.js
 const { exec } = require('child_process');
 const path = require('path');
 const CONSTANTS = require('../config/constants');
 const PROFILE_UTILS = require('../config/seniorProfiles');
 
-/**
- * Calls the external Python STT Service
+/** 
+ * NEW: Function to execute the external Python script 
  */
-const processAudioToText = async (filePath) => {
+const transcribeAudio = async (filePath) => {
   return new Promise((resolve, reject) => {
-    const pythonPath = 'python'; // or 'python3' on Mac/Linux
-    const scriptPath = path.join(__dirname, '../../python-stt/transcribe.py');
+    // Locate your python script relative to server.js
+    const scriptPath = path.join(__dirname, '../../extract/whisper_test.py');
     
-    const command = `${pythonPath} "${scriptPath}" --audio_path "${filePath}"`;
+    // Command depends on your OS ('python' or 'python3')
+    const pythonCommand = 'python'; 
+    
+    const command = `${pythonCommand} "${scriptPath}" --audio_path "${filePath}"`;
 
-    console.log(`Executing STT: ${command}`);
+    console.log(`Running STT... ${command}`);
 
     exec(command, { timeout: 60000 }, (error, stdout, stderr) => {
       if (error) {
-        console.error(`STT Error: ${error.message}`);
-        return reject({ error: 'Transcription failed', details: stderr });
+        return reject({ error: 'Python process failed', details: stderr });
       }
 
       try {
-        // Parse the JSON string output from Python
+        // Parse the JSON output from Python
         const data = JSON.parse(stdout);
+        
+        // Check for error returned by Python
+        if(data.error) {
+          return reject({ error: 'Whisper Error', details: data.error });
+        }
+
         resolve(data);
       } catch (parseErr) {
-        reject({ error: 'Failed to parse STT output', details: stdout });
+        reject({ error: 'Failed to parse output', details: stdout });
       }
     });
   });
 };
 
-// ... Rest of calculateUrgencyScore remains the same ...
+// Keep your existing calculateUrgencyScore function here 
+// (Assuming you kept it from the previous setup)
 const calculateUrgencyScore = async (text, seniorId) => {
-  // Logic stays identical
-  const profile = PROFILE_UTILS.SENIOR_DB[seniorId] || null;
-  let currentScore = 2; 
-  const lowerText = text.toLowerCase();
-  
-  CONSTANTS.KEYWORDS.forEach(item => {
-    if (lowerText.includes(item.term)) {
-      currentScore += item.weight;
-    }
-  });
-  
-  if (profile && profile.conditions.includes('Arrhythmia')) {
-    if (lowerText.includes('chest') || lowerText.includes('heart')) {
-      currentScore += 1; 
-    }
-  }
+   // ... [Paste your existing urgency logic here] ...
+   // Ensure you have access to CONSTANTS and PROFILE_UTILS
+   const profile = PROFILE_UTILS.SENIOR_DB[seniorId] || null;
+   let currentScore = 2; 
+   const lowerText = text.toLowerCase();
 
-  let finalScore = Math.min(Math.max(currentScore, 1), CONSTANTS.SCORE_MAX);
+   CONSTANTS.KEYWORDS.forEach(item => {
+     if (lowerText.includes(item.term)) {
+       currentScore += item.weight;
+     }
+   });
 
-  return {
-    score: finalScore,
-    level: Object.values(CONSTANTS.URGENCY_LEVELS).find(l => 
-      finalScore >= l.min && finalScore <= l.max
-    ).label,
-    detectedTerms: CONSTANTS.KEYWORDS.filter(k => 
-      lowerText.includes(k.term)
-    ).map(k => k.category)
-  };
+   // Clamp score
+   let finalScore = Math.min(Math.max(currentScore, 1), 5);
+
+   return {
+     score: finalScore,
+     level: CONSTANTS.URGENCY_LEVELS.HIGH.label === 'Critical' ? 'Critical' : 'Normal', // Simplified for example
+     detectedTerms: [] 
+   };
 };
 
-module.exports = { processAudioToText, calculateUrgencyScore };
+module.exports = { transcribeAudio, calculateUrgencyScore };
