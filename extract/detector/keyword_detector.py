@@ -1,8 +1,7 @@
 from datetime import datetime
-from pathlib import Path
+import os
 
 # ── keyword tiers ────────────────────────────────────────────
-# CRITICAL (3 pts) — immediate life threat
 CRITICAL = [
     "fire", "burning", "flames",
     "heart attack", "chest pain", "can't breathe", "cannot breathe", "not breathing",
@@ -12,7 +11,6 @@ CRITICAL = [
     "help me", "help", "emergency", "call ambulance", "call 995"
 ]
 
-# HIGH (2 pts) — serious but not immediately life-threatening
 HIGH = [
     "fell down", "fallen", "fall", "can't get up", "cannot get up",
     "broken", "fracture", "injured", "injury",
@@ -22,7 +20,6 @@ HIGH = [
     "confused", "disoriented", "lost",
 ]
 
-# MEDIUM (1 pt) — worth noting, may need follow-up
 MEDIUM = [
     "scared", "afraid", "frightened", "worried",
     "unwell", "sick", "not feeling well", "weak", "tired",
@@ -31,53 +28,57 @@ MEDIUM = [
     "wet", "soiled",
 ]
 
-# ── priority labels ──────────────────────────────────────────
-def get_priority(score):
-    if score >= 3:   return "🔴 CRITICAL"
-    elif score >= 2: return "🟠 HIGH"
-    elif score >= 1: return "🟡 MEDIUM"
-    else:            return "🟢 LOW"
+# ── priority labels ───────────────────────────────────────────
+def get_priority(tier: str) -> str:
+    return {
+        "critical": "🔴 CRITICAL",
+        "high":     "🟠 HIGH",
+        "medium":   "🟡 MEDIUM",
+        "low":      "🟢 LOW",
+    }.get(tier, "🟢 LOW")
 
-# ── main detector ────────────────────────────────────────────
+# ── main detector ─────────────────────────────────────────────
 def analyse(transcript: str, audio_filename: str = "unknown") -> dict:
     text = transcript.lower()
-    matched = {"critical": [], "high": [], "medium": []}
-    score = 0
+    matched: dict = {"critical": [], "high": [], "medium": []}
 
+    # collect unique matches only — duplicates are ignored
     for kw in CRITICAL:
-        if kw in text:
+        if kw in text and kw not in matched["critical"]:
             matched["critical"].append(kw)
-            score += 3
 
     for kw in HIGH:
-        if kw in text:
+        if kw in text and kw not in matched["high"]:
             matched["high"].append(kw)
-            score += 2
 
     for kw in MEDIUM:
-        if kw in text:
+        if kw in text and kw not in matched["medium"]:
             matched["medium"].append(kw)
-            score += 1
 
-    priority = get_priority(score)
-    all_matched = matched["critical"] + matched["high"] + matched["medium"]
+    # ── urgency based on HIGHEST tier found, not cumulative score ──
+    if matched["critical"]:
+        top_tier = "critical"
+    elif matched["high"]:
+        top_tier = "high"
+    elif matched["medium"]:
+        top_tier = "medium"
+    else:
+        top_tier = "low"
 
-    result = {
-        "file":      audio_filename,
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "transcript": transcript,
-        "priority":  priority,
-        "score":     score,
-        "matched":   matched,
-        "keywords_found": all_matched,
+    return {
+        "file":           audio_filename,
+        "timestamp":      datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "transcript":     transcript,
+        "priority":       get_priority(top_tier),
+        "top_tier":       top_tier,
+        "matched":        matched,
+        "keywords_found": matched["critical"] + matched["high"] + matched["medium"],
     }
 
-    return result
-
-# ── print alert to terminal ──────────────────────────────────
-def print_alert(result: dict):
+# ── print alert to terminal ───────────────────────────────────
+def print_alert(result: dict) -> None:
     print("\n" + "="*52)
-    print(f"  {result['priority']}  —  Score: {result['score']}")
+    print(f"  {result['priority']}")
     print("="*52)
     print(f"  File      : {result['file']}")
     print(f"  Time      : {result['timestamp']}")
@@ -93,18 +94,17 @@ def print_alert(result: dict):
         print("  No risk keywords detected.")
     print("="*52 + "\n")
 
-# ── save risk report ─────────────────────────────────────────
-def save_report(result: dict, audio_path: str):
+# ── save risk report ──────────────────────────────────────────
+def save_report(result: dict, audio_path: str) -> None:
     report_path = audio_path.replace(".webm", "_risk_report.txt")
-    with open(report_path, "w") as f:
-        f.write(f"PAB RISK REPORT\n")
+    with open(report_path, "w", encoding="utf-8") as f:
+        f.write("PAB RISK REPORT\n")
         f.write(f"{'='*40}\n")
         f.write(f"File      : {result['file']}\n")
         f.write(f"Timestamp : {result['timestamp']}\n")
         f.write(f"Priority  : {result['priority']}\n")
-        f.write(f"Score     : {result['score']}\n")
         f.write(f"\nTranscript:\n{result['transcript']}\n")
-        f.write(f"\nKeywords Detected:\n")
+        f.write("\nKeywords Detected:\n")
         if result["matched"]["critical"]:
             f.write(f"  CRITICAL : {', '.join(result['matched']['critical'])}\n")
         if result["matched"]["high"]:
