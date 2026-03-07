@@ -1,0 +1,38 @@
+{
+  "urgency_categories": {
+    "high": {
+      "description": "Life-threatening, immediate medical attention required; delay may cause death or severe disability",
+      "examples": [
+        "chest pain",
+        "cardiac arrest",
+        "heart attack",
+        "stroke",
+        "unconscious",
+        "severe breathing difficulty",
+        "major trauma",
+        "severe bleeding"
+      ]
+    },
+    "medium": {
+      "description": "Serious condition that requires prompt attention but not immediately life-threatening",
+      "examples": [
+        "fever with confusion",
+        "moderate fall injuries",
+        "persistent vomiting",
+        "moderate asthma attack",
+        "infection with worsening symptoms"
+      ]
+    },
+    "low": {
+      "description": "Non-critical, can wait for assessment; mainly discomfort or minor injury",
+      "examples": [
+        "mild cough",
+        "minor cuts/bruises",
+        "dizziness",
+        "mild pain",
+        "minor burns",
+        "seeking advice"
+      ]
+    }
+  }
+}
