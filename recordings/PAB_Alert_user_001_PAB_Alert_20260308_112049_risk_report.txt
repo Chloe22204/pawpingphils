@@ -1,0 +1,42 @@
+====================================================
+  PAB EMERGENCY RISK REPORT
+====================================================
+
+  Priority  : 🟠 HIGH
+  File      : PAB_Alert_user_001_PAB_Alert_20260308_112049.webm
+  Timestamp : 2026-03-08 11:21:00
+
+  PATIENT INFORMATION
+  ----------------------------------------
+  Name              : Tan Ah Kow
+  Age               : 78
+  Contact           : +65 9123 4567
+  Emergency Contact : Tan Wei Ming (Son) — +65 9876 5432
+  Address           : Blk 123 Tampines Street 45, #08-12, Singapore 520123
+  Mobility          : Uses walking stick
+  Language          : Mandarin / Hokkien
+  Medical History   : Hypertension, Type 2 Diabetes, Coronary Artery Disease
+  Current Medications:
+    - Metformin 500mg (twice daily)
+    - Amlodipine 5mg (once daily)
+    - Aspirin 100mg (once daily)
+  ⚠️  Allergies      : Penicillin
+
+  TRANSCRIPT
+  ----------------------------------------
+  Oh, chill. I'm falling in the toilet.
+
+  KEYWORDS DETECTED
+  ----------------------------------------
+  HIGH     : fall
+
+  HYBRID TRIAGE
+  ----------------------------------------
+  Final Priority   : P2 (HIGH)
+  Rule Priority    : P2
+  LLM Priority     : P2
+  Decision Source  : hybrid_rules_held
+  Flags            : Fall reported in toilet, Distressed vocal tone, Age 78 with CAD & diabetes, Uses walking stick, Impact sound detected
+  LLM Reasoning    : The user reports falling in the toilet — a high-risk location for injury — with distressed tone and audible impact, compounded by advanced age and significant comorbidities including coronary artery disease and diabetes. While breathing is normal now, falls in this population carry high risk of hidden injury, syncope, 
+
+====================================================

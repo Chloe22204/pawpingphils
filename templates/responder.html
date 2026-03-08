@@ -504,13 +504,48 @@ function renderDetail() {
       '</div><div class="transcript-box"><span class="transcript-prefix">AI TRANSCRIPT: </span>"'+tx+'"</div></div>' +
     '</div>' +
 
-(a.llm_note || a.triage_flags || a.decision_source || a.rule_priority || a.llm_priority ? 
+(a.llm_note || a.triage_flags || a.decision_source ?
   '<div class="detail-section"><div class="section-label">🤖 AI Triage Intelligence</div>' +
-  '<div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;">' +
-  (a.decision_source ? '<div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:10px;font-weight:700;color:#a0aec0;letter-spacing:0.08em;min-width:60px;padding-top:2px">SOURCE</span><div style="font-size:12px;color:#4a5568">'+a.decision_source+'</div></div>' : "") +
-  ((a.rule_priority || a.llm_priority) ? '<div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:10px;font-weight:700;color:#a0aec0;letter-spacing:0.08em;min-width:60px;padding-top:2px">PRIORITY</span><div style="font-size:12px;color:#4a5568">'+(a.rule_priority || "-")+' → '+(a.llm_priority || "-")+'</div></div>' : "") +
-  (a.triage_flags ? '<div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:10px;font-weight:700;color:#a0aec0;letter-spacing:0.08em;min-width:60px;padding-top:1px">FLAGS</span><div style="display:flex;flex-wrap:wrap;gap:5px">' + a.triage_flags.split(",").map(f => '<span style="font-size:11px;padding:2px 8px;border-radius:99px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;font-weight:600">' + f.trim() + '</span>').join("") + '</div></div>' : "") +
-  (a.llm_note ? '<div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:10px;font-weight:700;color:#a0aec0;letter-spacing:0.08em;min-width:60px;padding-top:2px">REASON</span><div style="font-size:12px;color:#4a5568;line-height:1.6;font-style:italic">' + a.llm_note + '</div></div>' : "") +
+  '<div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;">' +
+
+  // Decision source badge
+  (a.decision_source ? 
+    '<div style="display:flex;gap:8px;align-items:center">' +
+      '<span style="font-size:10px;font-weight:700;color:#a0aec0;letter-spacing:0.08em;min-width:60px">SOURCE</span>' +
+      '<span style="font-size:11px;padding:2px 10px;border-radius:99px;font-weight:700;' +
+        (a.decision_source.includes("llm") ? 'background:#ebf4ff;color:#2b6cb0;border:1px solid #bee3f8' : 'background:#f0fdf4;color:#276749;border:1px solid #6ee7b7') +
+      '">' + a.decision_source + '</span>' +
+    '</div>' 
+  : "") +
+
+  // Priority escalation — only show if LLM actually changed it
+  (a.triage_flags && a.triage_flags.includes("→") || (a.rule_priority && a.llm_priority && a.rule_priority !== a.llm_priority) ?
+    '<div style="display:flex;gap:8px;align-items:center">' +
+      '<span style="font-size:10px;font-weight:700;color:#a0aec0;letter-spacing:0.08em;min-width:60px">ESCALATION</span>' +
+      '<span style="font-size:12px;font-weight:700;color:#e53e3e">' + (a.rule_priority||"—") + ' → ' + (a.llm_priority||"—") + ' ⬆ Upgraded by AI</span>' +
+    '</div>'
+  : "") +
+
+  // Flags as pills
+  (a.triage_flags ?
+    '<div style="display:flex;gap:8px;align-items:flex-start">' +
+      '<span style="font-size:10px;font-weight:700;color:#a0aec0;letter-spacing:0.08em;min-width:60px;padding-top:4px">FLAGS</span>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:5px">' +
+        a.triage_flags.split(",").map(f =>
+          '<span style="font-size:11px;padding:3px 10px;border-radius:99px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;font-weight:600">' + f.trim() + '</span>'
+        ).join("") +
+      '</div>' +
+    '</div>'
+  : "") +
+
+  // LLM reasoning — full width, prominent
+  (a.llm_note ?
+    '<div style="background:#fff;border:1px solid #e2e8f0;border-left:3px solid #2b6cb0;border-radius:6px;padding:10px 14px;">' +
+      '<div style="font-size:10px;font-weight:700;color:#a0aec0;letter-spacing:0.08em;margin-bottom:6px">AI REASONING</div>' +
+      '<div style="font-size:12px;color:#2d3748;line-height:1.7;font-style:italic">' + a.llm_note + '</div>' +
+    '</div>'
+  : "") +
+
   '</div></div>'
 : "") +
     '<div class="detail-section"><div class="section-label">🔑 Risk Keywords</div>'+kwHtml+'</div>' +

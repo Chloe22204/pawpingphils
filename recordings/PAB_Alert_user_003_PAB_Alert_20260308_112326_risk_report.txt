@@ -1,0 +1,42 @@
+====================================================
+  PAB EMERGENCY RISK REPORT
+====================================================
+
+  Priority  : 🟠 HIGH
+  File      : PAB_Alert_user_003_PAB_Alert_20260308_112326.webm
+  Timestamp : 2026-03-08 11:23:34
+
+  PATIENT INFORMATION
+  ----------------------------------------
+  Name              : Muthu Rajasekaran
+  Age               : 74
+  Contact           : +65 9345 6789
+  Emergency Contact : Priya Rajasekaran (Daughter) — +65 9654 3210
+  Address           : Blk 88 Toa Payoh Lorong 4, #12-05, Singapore 310088
+  Mobility          : Independent, slow gait
+  Language          : Tamil / English
+  Medical History   : Type 2 Diabetes, Chronic Kidney Disease Stage 3, Peripheral Neuropathy
+  Current Medications:
+    - Insulin Glargine 20 units (nightly)
+    - Lisinopril 10mg (once daily)
+    - Gabapentin 300mg (twice daily)
+  ⚠️  Allergies      : Sulfa drugs, Contrast dye
+
+  TRANSCRIPT
+  ----------------------------------------
+  Help!
+
+  KEYWORDS DETECTED
+  ----------------------------------------
+  CRITICAL : help
+
+  HYBRID TRIAGE
+  ----------------------------------------
+  Final Priority   : P2 (HIGH)
+  Rule Priority    : P2
+  LLM Priority     : P2
+  Decision Source  : hybrid_rules_held
+  Flags            : Single 'Help!' utterance, Distressed vocal tone, Background impact sound, Age 74 with CKD Stage 3, Peripheral neuropathy increases fall risk
+  LLM Reasoning    : The utterance 'Help!' combined with distressed vocal tone and an impact sound suggests a possible acute incident. Though breathing is normal and no medical keywords beyond 'help' were detected, the patient's age and comorbidities—especially CKD Stage 3 and peripheral neuropathy—elevate risk for rapid deterioration post
+
+====================================================
