@@ -264,7 +264,15 @@
 
   // ── recording ──
   async function startRecording() {
-    if (!currentUser) return;
+     if (!currentUser) return;
+
+    // ── check if SCDF already dispatched before opening mic ──
+    const check = await fetch('/api/check-dispatch');
+    const checkData = await check.json();
+    if (checkData.blocked) {
+        lockButtonScdfDispatched();
+        return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder = new MediaRecorder(stream);
@@ -290,6 +298,10 @@
           addLog(`Saved to server: ${data.file}`, 'success');
           addLog('Whisper transcription will start automatically via watcher', 'warn');
         } else {
+          if (data.blocked_by_dispatch) {
+            dot.className = 'dot error';
+            statusLabel.textContent = 'CASE LOCKED — SCDF DISPATCHED';
+          }
           addLog('Upload failed: ' + (data.error || 'unknown error'), 'err');
         }
 
@@ -337,6 +349,26 @@
     if (!currentUser) return;
     isRecording ? stopRecording() : startRecording();
   });
+
+  function lockButtonScdfDispatched() {
+    // disable button visually
+    pabBtn.disabled = true;
+    pabBtn.style.background = 'radial-gradient(circle at 38% 35%, #2d6a4f, #1b4332 55%, #0d2b1f)';
+    pabBtn.style.boxShadow = '0 0 0 6px #0d1f18, 0 0 0 8px #132a1e, 0 0 32px rgba(39,201,122,0.2)';
+    pabBtn.style.cursor = 'not-allowed';
+    btnIcon.textContent = '🚑';
+    btnText.textContent = 'HELP COMING';
+
+    // update status panel
+    dot.className = 'dot active';
+    dot.style.background = 'var(--green)';
+    dot.style.boxShadow = '0 0 6px var(--green)';
+    statusLabel.textContent = 'SCDF DISPATCHED — HELP IS ON THE WAY';
+    statusLabel.style.color = 'var(--green)';
+
+    addLog('SCDF has been dispatched for your alert.', 'success');
+    addLog('Please stay where you are and wait for help.', 'warn');
+}
 </script>
 </body>
 </html>

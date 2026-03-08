@@ -40,6 +40,135 @@
       "allergies": [],
       "mobility": "Uses wheelchair",
       "language": "Cantonese / English"
+    },
+    {
+      "id": "user_003",
+      "name": "Muthu Rajasekaran",
+      "password": "2345",
+      "age": 74,
+      "contact": "+65 9345 6789",
+      "emergency_contact": {
+        "name": "Priya Rajasekaran (Daughter)",
+        "number": "+65 9654 3210"
+      },
+      "address": "Blk 88 Toa Payoh Lorong 4, #12-05, Singapore 310088",
+      "medical_history": ["Type 2 Diabetes", "Chronic Kidney Disease Stage 3", "Peripheral Neuropathy"],
+      "current_medications": [
+        "Insulin Glargine 20 units (nightly)",
+        "Lisinopril 10mg (once daily)",
+        "Gabapentin 300mg (twice daily)"
+      ],
+      "allergies": ["Sulfa drugs", "Contrast dye"],
+      "mobility": "Independent, slow gait",
+      "language": "Tamil / English"
+    },
+    {
+      "id": "user_004",
+      "name": "Wong Sau Fong",
+      "password": "3456",
+      "age": 88,
+      "contact": "+65 9456 7890",
+      "emergency_contact": {
+        "name": "Wong Kok Leong (Son)",
+        "number": "+65 9543 2109"
+      },
+      "address": "Blk 32 Queenstown Rd, #06-11, Singapore 140032",
+      "medical_history": ["Dementia (mild)", "Atrial Fibrillation", "Hypertension", "Osteoarthritis"],
+      "current_medications": [
+        "Warfarin 3mg (once daily)",
+        "Donepezil 5mg (once daily)",
+        "Losartan 50mg (once daily)",
+        "Paracetamol 500mg (as needed)"
+      ],
+      "allergies": ["Aspirin", "NSAIDs"],
+      "mobility": "Requires assistance, fall risk",
+      "language": "Cantonese / Mandarin"
+    },
+    {
+      "id": "user_005",
+      "name": "Siti Rahmah Binte Yusof",
+      "password": "4567",
+      "age": 71,
+      "contact": "+65 9567 8901",
+      "emergency_contact": {
+        "name": "Farid Bin Yusof (Son)",
+        "number": "+65 9432 1098"
+      },
+      "address": "Blk 215 Bukit Batok Street 21, #09-17, Singapore 650215",
+      "medical_history": ["Hypertension", "Asthma", "Hyperlipidaemia"],
+      "current_medications": [
+        "Salbutamol inhaler (as needed)",
+        "Fluticasone inhaler (twice daily)",
+        "Simvastatin 20mg (once nightly)",
+        "Enalapril 5mg (once daily)"
+      ],
+      "allergies": ["Latex"],
+      "mobility": "Independent",
+      "language": "Malay / English"
+    },
+    {
+      "id": "user_006",
+      "name": "Chong Kok Wai",
+      "password": "5679",
+      "age": 80,
+      "contact": "+65 9678 9012",
+      "emergency_contact": {
+        "name": "Chong Li Yen (Daughter-in-law)",
+        "number": "+65 9321 0987"
+      },
+      "address": "Blk 701 Woodlands Ave 4, #04-22, Singapore 730701",
+      "medical_history": ["Parkinson's Disease", "Hypertension", "Depression"],
+      "current_medications": [
+        "Levodopa/Carbidopa 100/25mg (three times daily)",
+        "Amlodipine 5mg (once daily)",
+        "Sertraline 50mg (once daily)"
+      ],
+      "allergies": [],
+      "mobility": "Shuffling gait, high fall risk",
+      "language": "Mandarin / Hakka"
+    },
+    {
+      "id": "user_007",
+      "name": "Nalini d/o Subramaniam",
+      "password": "6789",
+      "age": 76,
+      "contact": "+65 9789 0123",
+      "emergency_contact": {
+        "name": "Rajan Subramaniam (Brother)",
+        "number": "+65 9210 9876"
+      },
+      "address": "Blk 19 Geylang Bahru, #02-06, Singapore 330019",
+      "medical_history": ["Stroke (2021)", "Hypertension", "Dysphagia", "Depression"],
+      "current_medications": [
+        "Clopidogrel 75mg (once daily)",
+        "Ramipril 5mg (once daily)",
+        "Mirtazapine 15mg (once nightly)"
+      ],
+      "allergies": ["Penicillin", "Codeine"],
+      "mobility": "Left-sided weakness, uses quad cane",
+      "language": "Tamil / English"
+    },
+    {
+      "id": "user_008",
+      "name": "Lee Swee Kiat",
+      "password": "7890",
+      "age": 85,
+      "contact": "+65 9890 1234",
+      "emergency_contact": {
+        "name": "Lee Mei Ling (Daughter)",
+        "number": "+65 9109 8765"
+      },
+      "address": "Blk 504 Ang Mo Kio Ave 8, #11-03, Singapore 560504",
+      "medical_history": ["COPD", "Lung Cancer (remission)", "Hypertension", "Anaemia"],
+      "current_medications": [
+        "Tiotropium inhaler (once daily)",
+        "Prednisolone 5mg (once daily)",
+        "Amlodipine 10mg (once daily)",
+        "Ferrous sulphate 200mg (twice daily)"
+      ],
+      "allergies": ["Morphine", "Iodine"],
+      "mobility": "Uses rollator walker, limited exertion",
+      "language": "Hokkien / Mandarin"
     }
   ]
 }

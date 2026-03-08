@@ -23,11 +23,15 @@ RAPID_BREATH_RATE_THRESHOLD = 35
 WEAK_VOICE_RMS_THRESHOLD    = 0.015
 SCREAM_F0_THRESHOLD         = 600
 SLUR_MFCC_VARIANCE_THRESH   = 120
+DISTRESSED_PITCH_STD_THRESH = 95
+DISTRESSED_ZCR_THRESHOLD    = 0.082
+DISTRESSED_RMS_CV_THRESHOLD = 0.60
 ALARM_FREQ_LOW              = 2800
 ALARM_FREQ_HIGH             = 3200
 IMPACT_ONSET_THRESHOLD      = 0.85
 WATER_ZCR_THRESHOLD         = 0.12
 CARER_PRESENT_THRESHOLD     = 35.0    
+VOICE_ACTIVITY_MAX_FOR_BREATH = 0.55
 
 
 # ── Main entry point ──────────────────────────────────────────────────────────
@@ -56,6 +60,7 @@ def analyse_audio(audio_path: str) -> dict:
             "breathing_state": breathing_state,
             "vocal_tone":      vocal_tone,
             "background_cues": background_cues,
+            "impact_event_count": _estimate_impact_events(y, sr),
         }
 
         print(f"   🎙 Audio analysis complete:")
@@ -109,6 +114,13 @@ def _detect_breathing(y: np.ndarray, sr: int) -> str:
             pulse_count += 1
     pulse_rate = (pulse_count / duration_sec) * 60 if duration_sec > 0 else 0
 
+    # Speech-heavy clips should not be mistaken for breathing emergencies.
+    try:
+        f0_track = librosa.yin(y, fmin=65, fmax=450, sr=sr)
+        voiced_ratio = float(np.mean(np.isfinite(f0_track)))
+    except Exception:
+        voiced_ratio = 1.0
+
     # ── Agonal: very irregular sparse bursts ──────────────────────
     if len(onset_frames) > 2:
         intervals    = np.diff(onset_frames)
@@ -117,13 +129,16 @@ def _detect_breathing(y: np.ndarray, sr: int) -> str:
             return "agonal"
 
     # ── Laboured: high ZCR = turbulent airflow ────────────────────
-    if mean_zcr > LABOURED_ZCR_THRESHOLD or (rms > 0.02 and mean_zcr > 0.075 and pulse_count >= 3):
+    if (
+        voiced_ratio < VOICE_ACTIVITY_MAX_FOR_BREATH and
+        (mean_zcr > LABOURED_ZCR_THRESHOLD or (rms > 0.02 and mean_zcr > 0.08 and pulse_count >= 4))
+    ):
         return "laboured"
 
     # ── Rapid: only if recording > 3s (avoids speech false positives)
     if duration_sec > 3:
         breath_rate = (len(onset_frames) / duration_sec) * 60
-        if breath_rate > RAPID_BREATH_RATE_THRESHOLD or pulse_rate > 26:
+        if voiced_ratio < VOICE_ACTIVITY_MAX_FOR_BREATH and (breath_rate > RAPID_BREATH_RATE_THRESHOLD or pulse_rate > 28):
             return "rapid"
 
     # ── Absent ────────────────────────────────────────────────────
@@ -161,10 +176,15 @@ def _detect_vocal_tone(y: np.ndarray, sr: int) -> str:
     if mfcc_variance < SLUR_MFCC_VARIANCE_THRESH:
         return "slurred"
 
-    # ── Distressed: high pitch variation + moderate energy ────────
+    # ── Distressed: unstable pitch + turbulent/noisy/irregular energy ───────
+    zcr = librosa.feature.zero_crossing_rate(y)[0]
+    mean_zcr = float(np.mean(zcr))
+    rms_env = librosa.feature.rms(y=y, frame_length=1024, hop_length=256)[0]
+    rms_cv = float(np.std(rms_env) / (np.mean(rms_env) + 1e-6))
+
     if pitch_values and len(pitch_values) > 5:
         pitch_std = float(np.std(pitch_values))
-        if pitch_std > 80 and rms > 0.04:
+        if pitch_std > 150 and rms > 0.06:   # was 80 and 0.04 — much stricter
             return "distressed"
 
     return "calm"
@@ -175,17 +195,20 @@ def _detect_background_cues(y: np.ndarray, sr: int) -> list:
     cues: list = []
 
     # ── Impact / crash ────────────────────────────────────────────
-    onset_env = librosa.onset.onset_strength(y=y, sr=sr)
-    if len(onset_env) > 0 and float(np.max(onset_env)) > IMPACT_ONSET_THRESHOLD:
+    impact_events = _estimate_impact_events(y, sr)
+    if impact_events >= 2:
         cues.append("impact")
 
     # ── Alarm tone ────────────────────────────────────────────────
     stft         = np.abs(librosa.stft(y))
     freqs        = librosa.fft_frequencies(sr=sr)
     alarm_mask   = (freqs >= ALARM_FREQ_LOW) & (freqs <= ALARM_FREQ_HIGH)
-    alarm_energy = float(np.mean(stft[alarm_mask, :]))
-    total_energy = float(np.mean(stft))
-    if total_energy > 0 and (alarm_energy / total_energy) > 0.60:
+    alarm_energy = np.mean(stft[alarm_mask, :], axis=0)
+    total_energy = np.mean(stft, axis=0) + 1e-6
+    alarm_ratio_per_frame = alarm_energy / total_energy
+    alarm_ratio_mean = float(np.mean(alarm_ratio_per_frame))
+    alarm_ratio_std = float(np.std(alarm_ratio_per_frame))
+    if alarm_ratio_mean > 0.62 and alarm_ratio_std < 0.22 and float(np.percentile(alarm_ratio_per_frame, 75)) > 0.65:
         cues.append("alarm")
 
     # ── Running water ─────────────────────────────────────────────
@@ -221,4 +244,35 @@ def _safe_defaults() -> dict:
         "breathing_state": "normal",
         "vocal_tone":      "calm",
         "background_cues": [],
+        "impact_event_count": 0,
     }
+
+
+def _estimate_impact_events(y: np.ndarray, sr: int) -> int:
+    """Estimate count of strong transient impacts."""
+    # Use percussive component to reduce speech-driven false positives.
+    _, y_perc = librosa.effects.hpss(y)
+    onset_env = librosa.onset.onset_strength(y=y_perc, sr=sr)
+    if len(onset_env) < 3:
+        return 0
+
+    med_onset = float(np.median(onset_env))
+    std_onset = float(np.std(onset_env))
+    p95_onset = float(np.percentile(onset_env, 95))
+    # Strong threshold: robust against conversational consonant spikes
+    strong_thr = max(IMPACT_ONSET_THRESHOLD * 2.0, med_onset + (3.5 * std_onset), p95_onset * 1.2)
+
+    events = 0
+    last_peak_idx = -10_000
+    min_spacing = 10  # frames (~0.12s at default hop), avoids clustered speech peaks
+    for i in range(1, len(onset_env) - 1):
+        v = float(onset_env[i])
+        if (
+            v > strong_thr and
+            v > float(onset_env[i - 1]) and
+            v > float(onset_env[i + 1]) and
+            (i - last_peak_idx) >= min_spacing
+        ):
+            events += 1
+            last_peak_idx = i
+    return events

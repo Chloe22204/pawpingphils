@@ -1,0 +1,27 @@
+{
+  "id": "user_003",
+  "name": "Muthu Rajasekaran",
+  "age": 74,
+  "contact": "+65 9345 6789",
+  "emergency_contact": {
+    "name": "Priya Rajasekaran (Daughter)",
+    "number": "+65 9654 3210"
+  },
+  "address": "Blk 88 Toa Payoh Lorong 4, #12-05, Singapore 310088",
+  "medical_history": [
+    "Type 2 Diabetes",
+    "Chronic Kidney Disease Stage 3",
+    "Peripheral Neuropathy"
+  ],
+  "current_medications": [
+    "Insulin Glargine 20 units (nightly)",
+    "Lisinopril 10mg (once daily)",
+    "Gabapentin 300mg (twice daily)"
+  ],
+  "allergies": [
+    "Sulfa drugs",
+    "Contrast dye"
+  ],
+  "mobility": "Independent, slow gait",
+  "language": "Tamil / English"
+}

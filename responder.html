@@ -265,9 +265,6 @@ input { font-family: inherit; }
     <div class="stat-val" id="statResolved" style="color:#718096">0</div>
     <div class="stat-label">✓ Resolved Today</div>
   </div>
-  <div class="ai-indicator" style="margin-left:auto">
-    <div class="ai-dot"></div> AI Model Active
-  </div>
 </div>
 
 <!-- MAIN -->
@@ -472,14 +469,18 @@ function renderDetail() {
       onclick="setStatus('${a.id}','${s}')">${scfg.label}</button>`;
   }).join("");
 
-  const actionBtns = [
-    {color:"#2b6cb0", label:"📞 Call Senior"},
-    {color:"#276749", label:"🚑 Dispatch SCDF"},
-    {color:"#744210", label:"📱 Notify NOK"},
-    {color:"#553c9a", label:"👷 Send Volunteer"},
-  ].map(b => `<button class="action-btn" style="color:${b.color};border-color:${b.color}" onclick="flashAction(this,'${b.color}')">${b.label}</button>`).join("");
+	  const actionBtns = [
+	    {color:"#2b6cb0", label:"📞 Call Senior"},
+	    {color:"#276749", label:"🚑 Dispatch SCDF"},
+	    {color:"#744210", label:"📱 Notify NOK"},
+	    {color:"#553c9a", label:"👷 Send Volunteer"},
+	  ].map(b => `<button class="action-btn" style="color:${b.color};border-color:${b.color}" onclick="flashAction(this,'${b.color}')">${b.label}</button>`).join("");
 
-  panel.innerHTML = `
+  const aiReason = a.llm_note || a.llm_reasoning_summary || "";
+  const aiFlags = a.triage_flags || (Array.isArray(a.flags) ? a.flags.join(", ") : "");
+  const aiSource = a.decision_source || "";
+
+	  panel.innerHTML = `
     <div class="detail-header">
       <div class="detail-top">
         <div>
@@ -523,6 +524,16 @@ function renderDetail() {
         </div>
       </div>
     </div>
+
+    ${(aiReason || aiFlags || aiSource) ? `
+    <div class="detail-section">
+      <div class="section-label">🤖 AI Triage Notes</div>
+      <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
+        ${aiSource ? `<div style="font-size:11px;color:#718096"><strong>Decision:</strong> ${aiSource}</div>` : ''}
+        ${aiFlags ? `<div style="font-size:11px;color:#718096"><strong>Flags:</strong> ${aiFlags}</div>` : ''}
+        ${aiReason ? `<div style="font-size:12px;color:#4a5568;line-height:1.6"><strong>Reason:</strong> ${aiReason}</div>` : ''}
+      </div>
+    </div>` : ''}
 
     <div class="detail-section">
       <div class="section-label">🏥 Known Conditions</div>

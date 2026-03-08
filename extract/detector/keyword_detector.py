@@ -45,8 +45,7 @@ MEDIUM = [
 # LOW (non-human / property / pet incidents — noted but deprioritised)
 LOW = [
     # pet incidents
-    "rabbit", "cat", "dog", "bird", "fish", "hamster", "pet",
-    "died", "dead", "passed away", "gone","turtle",
+    "rabbit", "cat", "dog", "bird", "fish", "hamster", "pet","turtle",
     # property
     "broken phone", "lost keys", "spilled", "dropped","drop", "broke", "leaking", "flooded", "flood", "power cut", "power failure", "no power",
     "power outage", "lights out",

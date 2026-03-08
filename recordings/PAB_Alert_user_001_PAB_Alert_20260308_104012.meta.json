@@ -1,0 +1,26 @@
+{
+  "id": "user_001",
+  "name": "Tan Ah Kow",
+  "age": 78,
+  "contact": "+65 9123 4567",
+  "emergency_contact": {
+    "name": "Tan Wei Ming (Son)",
+    "number": "+65 9876 5432"
+  },
+  "address": "Blk 123 Tampines Street 45, #08-12, Singapore 520123",
+  "medical_history": [
+    "Hypertension",
+    "Type 2 Diabetes",
+    "Coronary Artery Disease"
+  ],
+  "current_medications": [
+    "Metformin 500mg (twice daily)",
+    "Amlodipine 5mg (once daily)",
+    "Aspirin 100mg (once daily)"
+  ],
+  "allergies": [
+    "Penicillin"
+  ],
+  "mobility": "Uses walking stick",
+  "language": "Mandarin / Hokkien"
+}

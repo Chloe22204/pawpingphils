@@ -62,6 +62,7 @@ input { font-family: inherit; }
 .card-transcript { font-size: 11px; color: #4a5568; background: #f7fafc; border-radius: 6px; padding: 5px 8px; margin-bottom: 8px; font-style: italic; }
 .card-bottom { display: flex; justify-content: space-between; align-items: center; }
 .status-chip { font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 600; }
+.scdf-chip { font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 600; color: #276749; background: #f0fdf4; border: 1px solid #6ee7b7; margin-left: 5px; }
 .conf-row { display: flex; align-items: center; gap: 8px; min-width: 90px; }
 .conf-track { flex: 1; height: 5px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
 .conf-fill { height: 100%; border-radius: 99px; }
@@ -109,11 +110,13 @@ input { font-family: inherit; }
 .med-item { font-size: 12px; color: #4a5568; padding: 5px 10px; background: #f7fafc; border-radius: 5px; border: 1px solid #e2e8f0; }
 .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
 .action-btn { padding: 9px 8px; border-radius: 7px; background: #fff; font-size: 12px; font-weight: 600; transition: all 0.2s; text-align: left; border: 1.5px solid; }
+.action-btn:disabled { cursor: not-allowed; }
 .status-btns { display: flex; gap: 8px; }
 .status-toggle { flex: 1; padding: 8px 4px; border-radius: 7px; font-size: 11px; font-weight: 700; transition: all 0.2s; text-transform: capitalize; }
 #toast { position: fixed; top: 70px; right: 20px; background: #1a202c; color: #fff; border-left: 4px solid #e53e3e; padding: 12px 16px; border-radius: 8px; font-size: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); animation: fadeIn 0.3s ease; z-index: 999; display: none; }
 .toast-title { font-weight: 700; margin-bottom: 2px; color: #fc8181; }
 .no-alerts { text-align: center; color: #a0aec0; font-size: 13px; margin-top: 40px; line-height: 1.8; }
+.scdf-dispatched-banner { background: #f0fdf4; border: 1px solid #6ee7b7; border-radius: 8px; padding: 9px 14px; margin-bottom: 10px; font-size: 12px; font-weight: 600; color: #276749; display: flex; align-items: center; gap: 8px; }
 </style>
 </head>
 <body>
@@ -140,7 +143,6 @@ input { font-family: inherit; }
   <div class="stat-item"><div class="stat-val" id="statMod" style="color:#d97706">0</div><div class="stat-label">🟡 MODERATE</div></div>
   <div class="stat-item"><div class="stat-val" id="statLow" style="color:#059669">0</div><div class="stat-label">🟢 LOW</div></div>
   <div class="stat-item" style="border-right:none"><div class="stat-val" id="statResolved" style="color:#718096">0</div><div class="stat-label">✓ Resolved Today</div></div>
-  <div class="ai-indicator"><div class="ai-dot"></div> AI Model Active</div>
 </div>
 
 <div id="main">
@@ -188,18 +190,17 @@ let currentFilter   = "ALL";
 let playingId       = null;
 let waveTimer       = null;
 let prevAlertIds    = new Set();
-let seenIds         = new Set(); // tracks which IDs have had their slide-in animation played
-let stableOrder     = []; // stable ordered list of IDs — prevents cards jumping
+let seenIds         = new Set();
+let stableOrder     = [];
+
+// ── Per-patient SCDF dispatch lock ───────────────────────────
+// Persists across detail re-renders; only clears when alert is resolved
+let scdfDispatchedIds = new Set();
 
 // ── Stable order builder ──────────────────────────────────────
-// New alerts are inserted by priority rank. Existing cards stay put.
 function buildStableOrder(filtered) {
   const filteredIds = new Set(filtered.map(a => a.id));
-
-  // remove IDs no longer visible
   stableOrder = stableOrder.filter(id => filteredIds.has(id));
-
-  // find truly new IDs
   const existingSet = new Set(stableOrder);
   const newAlerts = filtered
     .filter(a => !existingSet.has(a.id))
@@ -208,8 +209,6 @@ function buildStableOrder(filtered) {
       const rb = (URGENCY[b.urgency] || URGENCY.LOW).rank;
       return ra !== rb ? ra - rb : (a.timestamp || "").localeCompare(b.timestamp || "");
     });
-
-  // insert each new alert at the correct priority position
   newAlerts.forEach(newA => {
     const newRank = (URGENCY[newA.urgency] || URGENCY.LOW).rank;
     let insertAt  = stableOrder.length;
@@ -220,7 +219,6 @@ function buildStableOrder(filtered) {
     }
     stableOrder.splice(insertAt, 0, newA.id);
   });
-
   return stableOrder.map(id => filtered.find(a => a.id === id)).filter(Boolean);
 }
 
@@ -251,7 +249,6 @@ async function fetchAlerts() {
   try {
     const res  = await fetch("/api/alerts");
     const data = await res.json();
-
     const incoming = data.map(a => ({
       ...a,
       status:          statusOverrides[a.id] || a.status || "pending",
@@ -260,21 +257,15 @@ async function fetchAlerts() {
       elapsed_seconds: a.elapsed_seconds || 0,
       signals:         { transcript: a.transcript || "[No transcript]" }
     }));
-
-    // toast new HIGH alerts
     incoming.forEach(a => { if (!prevAlertIds.has(a.id) && a.urgency === "HIGH") showToast(a); });
     prevAlertIds = new Set(incoming.map(a => a.id));
-
-    // preserve elapsed
     const existingElapsed = {};
     alerts.forEach(a => { existingElapsed[a.id] = a.elapsed_seconds; });
     alerts = incoming.map(a => ({ ...a, elapsed_seconds: existingElapsed[a.id] !== undefined ? existingElapsed[a.id] : a.elapsed_seconds }));
-
     if (!selectedId) {
       const first = alerts.find(a => a.status !== "resolved");
       if (first) selectedId = first.id;
     }
-
     renderList();
     if (selectedId) renderDetail();
   } catch(e) { console.error("Fetch failed:", e); }
@@ -288,7 +279,7 @@ function updateStats() {
   document.getElementById("statMod").textContent      = active.filter(a => a.urgency === "MODERATE").length;
   document.getElementById("statLow").textContent      = active.filter(a => a.urgency === "LOW").length;
   document.getElementById("statResolved").textContent = alerts.filter(a => a.status === "resolved").length;
-  const hc = active.filter(a => a.urgency === "HIGH").length;
+  const hc  = active.filter(a => a.urgency === "HIGH").length;
   const ind = document.getElementById("criticalIndicator");
   ind.style.display = hc > 0 ? "flex" : "none";
   if (hc > 0) document.getElementById("criticalText").textContent = hc + " CRITICAL ACTIVE";
@@ -301,7 +292,7 @@ function setFilter(f) {
     b.className = "filter-btn";
     if (b.dataset.filter === f) b.classList.add("active-" + f);
   });
-  stableOrder = []; // reset order on filter change
+  stableOrder = [];
   renderList();
 }
 
@@ -309,7 +300,6 @@ function getFiltered() {
   const q = (document.getElementById("searchinput").value || "").toLowerCase();
   return alerts.filter(a => {
     const urg = a.urgency || "LOW";
-    // Always hide resolved alerts from the main queue list.
     if (a.status === "resolved") return false;
     const mf = currentFilter === "ALL" ||
                (currentFilter === "ACTIVE" && a.status !== "resolved") ||
@@ -337,15 +327,12 @@ function renderList() {
     return;
   }
 
-  // map existing cards
   const existingCards = {};
   list.querySelectorAll(".alert-card[data-id]").forEach(el => { existingCards[el.dataset.id] = el; });
 
-  // remove stale cards
   const visibleIds = new Set(ordered.map(a => a.id));
   Object.keys(existingCards).forEach(id => { if (!visibleIds.has(id)) existingCards[id].remove(); });
 
-  // upsert cards in stable order
   ordered.forEach((a, index) => {
     const cfg   = URGENCY[a.urgency || "LOW"] || URGENCY.LOW;
     const scfg  = STATUS[a.status] || STATUS.pending;
@@ -367,6 +354,11 @@ function renderList() {
     card.className = "alert-card" + (sel ? " selected" : "");
     card.style.cssText = "border-left:4px solid " + cfg.color + ";background:" + (sel ? cfg.light : "#fff") + ";";
 
+    // small SCDF chip visible on the card if dispatched
+    const scdfChip = scdfDispatchedIds.has(a.id)
+      ? '<span class="scdf-chip">🚑 SCDF</span>'
+      : "";
+
     card.innerHTML =
       '<div class="card-top">' +
         '<div>' +
@@ -383,14 +375,16 @@ function renderList() {
       '</div>' +
       '<div class="card-transcript">"' + tx + '"</div>' +
       '<div class="card-bottom">' +
-        '<span class="status-chip" style="color:'+scfg.color+';background:'+scfg.bg+'">● ' + scfg.label + '</span>' +
+        '<div style="display:flex;align-items:center">' +
+          '<span class="status-chip" style="color:'+scfg.color+';background:'+scfg.bg+'">● ' + scfg.label + '</span>' +
+          scdfChip +
+        '</div>' +
         '<div class="conf-row">' +
           '<div class="conf-track"><div class="conf-fill" style="width:'+conf+'%;background:'+cc+'"></div></div>' +
           '<span class="conf-label" style="color:'+cc+'">' + conf + '%</span>' +
         '</div>' +
       '</div>';
 
-    // insert at correct position without moving existing cards unnecessarily
     const atIndex = list.children[index];
     if (atIndex !== card) list.insertBefore(card, atIndex || null);
   });
@@ -418,29 +412,121 @@ function renderDetail() {
 
   const cfg  = URGENCY[a.urgency || "LOW"] || URGENCY.LOW;
   const conf = Math.round((a.confidence || 0.85) * 100);
-  const bannerText = { HIGH:"⚠ Immediate response required — dispatch SCDF / on-call responder now", MODERATE:"⚡ Timely response needed — assess within 10 min", LOW:"✓ Non-critical — welfare check recommended within 30 min" }[a.urgency] || "Review details below";
+  const bannerText = {
+    HIGH:     "⚠ Immediate response required — dispatch SCDF / on-call responder now",
+    MODERATE: "⚡ Timely response needed — assess within 10 min",
+    LOW:      "✓ Non-critical — welfare check recommended within 30 min"
+  }[a.urgency] || "Review details below";
+
   const isPlaying = playingId === a.id;
   const waveBars  = Array.from({length:28},(_,i)=>'<div class="wbar'+(isPlaying?' active':'')+'" style="height:'+(4+Math.sin(i*.8)*5+3)+'px;animation:'+(isPlaying?'wave '+(0.3+(i%5)*0.08)+'s ease-in-out infinite alternate':'none')+'"></div>').join("");
-  const statusBtns = ["pending","acknowledged","resolved"].map(s=>{const sc=STATUS[s];const act=a.status===s;return '<button class="status-toggle" style="border:1px solid '+sc.color+';background:'+(act?sc.color:"#fff")+';color:'+(act?"#fff":sc.color)+'" onclick="setStatus(\''+a.id+'\',\''+s+'\')">'+sc.label+'</button>';}).join("");
-  const actionBtns = [{color:"#2b6cb0",label:"📞 Call Senior"},{color:"#276749",label:"🚑 Dispatch SCDF"},{color:"#744210",label:"📱 Notify NOK"},{color:"#553c9a",label:"👷 Send Volunteer"}].map(b=>'<button class="action-btn" style="color:'+b.color+';border-color:'+b.color+'" onclick="flashAction(this,\''+b.color+'\')">'+b.label+'</button>').join("");
-  const condTags = (a.conditions||[]).length>0 ? a.conditions.map(c=>'<span class="condition-tag">'+c+'</span>').join("") : '<span style="font-size:12px;color:#a0aec0">None on record</span>';
-  const medHtml  = (a.current_medications||[]).length>0 ? '<div class="med-list">'+(a.current_medications).map(m=>'<div class="med-item">💊 '+m+'</div>').join("")+'</div>' : '<span style="font-size:12px;color:#a0aec0">None on record</span>';
-  const algHtml  = (a.allergies||[]).length>0 ? a.allergies.map(al=>'<span class="allergy-tag">⚠ '+al+'</span>').join("") : '<span style="font-size:12px;color:#a0aec0">None recorded</span>';
-  const kwHtml   = a.keywords_summary && a.keywords_summary!=="None detected"
-    ? '<div class="keyword-row">'+(a.keywords_critical?'<span class="kw-tag" style="color:#e53e3e;background:#fff5f5;border-color:#feb2b2">🔴 '+a.keywords_critical+'</span>':"")+(a.keywords_high?'<span class="kw-tag" style="color:#d97706;background:#fffbeb;border-color:#fcd34d">🟠 '+a.keywords_high+'</span>':"")+(a.keywords_medium?'<span class="kw-tag" style="color:#059669;background:#f0fdf4;border-color:#6ee7b7">🟡 '+a.keywords_medium+'</span>':"")+'</div>'
+
+  const statusBtns = ["pending","acknowledged","resolved"].map(s => {
+    const sc  = STATUS[s];
+    const act = a.status === s;
+    return '<button class="status-toggle" style="border:1px solid '+sc.color+';background:'+(act?sc.color:"#fff")+';color:'+(act?"#fff":sc.color)+'" onclick="setStatus(\''+a.id+'\',\''+s+'\')">'+sc.label+'</button>';
+  }).join("");
+
+  // ── SCDF button: locked per-patient until resolved ────────
+  const scdfDispatched = scdfDispatchedIds.has(a.id);
+  const scdfBtnHtml = scdfDispatched
+    ? '<button class="action-btn" disabled style="color:#a0aec0;border-color:#e2e8f0;background:#f7fafc;cursor:not-allowed;opacity:0.65;">🚑 SCDF Dispatched ✓</button>'
+    : '<button class="action-btn" style="color:#276749;border-color:#276749" onclick="dispatchScdf(\''+a.id+'\')">🚑 Dispatch SCDF</button>';
+
+  // info banner shown in actions section once SCDF is dispatched
+  const scdfDispatchedBanner = scdfDispatched
+    ? '<div class="scdf-dispatched-banner">🚑 SCDF has been dispatched. Button locked until this alert is resolved.</div>'
+    : "";
+
+  const condTags = (a.conditions||[]).length>0
+    ? a.conditions.map(c=>'<span class="condition-tag">'+c+'</span>').join("")
+    : '<span style="font-size:12px;color:#a0aec0">None on record</span>';
+
+  const medHtml = (a.current_medications||[]).length>0
+    ? '<div class="med-list">'+(a.current_medications).map(m=>'<div class="med-item">💊 '+m+'</div>').join("")+'</div>'
+    : '<span style="font-size:12px;color:#a0aec0">None on record</span>';
+
+  const algHtml = (a.allergies||[]).length>0
+    ? a.allergies.map(al=>'<span class="allergy-tag">⚠ '+al+'</span>').join("")
+    : '<span style="font-size:12px;color:#a0aec0">None recorded</span>';
+
+  const kwHtml = a.keywords_summary && a.keywords_summary !== "None detected"
+    ? '<div class="keyword-row">'+
+        (a.keywords_critical ? '<span class="kw-tag" style="color:#e53e3e;background:#fff5f5;border-color:#feb2b2">🔴 '+a.keywords_critical+'</span>' : "")+
+        (a.keywords_high     ? '<span class="kw-tag" style="color:#d97706;background:#fffbeb;border-color:#fcd34d">🟠 '+a.keywords_high+'</span>'     : "")+
+        (a.keywords_medium   ? '<span class="kw-tag" style="color:#059669;background:#f0fdf4;border-color:#6ee7b7">🟡 '+a.keywords_medium+'</span>'   : "")+
+      '</div>'
     : '<span style="font-size:12px;color:#a0aec0">No risk keywords detected</span>';
+
   const tx = (a.signals && a.signals.transcript) ? a.signals.transcript : "[No transcript]";
-  const resolvedBanner = a.status === "resolved" ? '<div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;font-weight:600;color:#276749">✓ This alert has been resolved and removed from the active queue.</div>' : "";
+
+  const resolvedBanner = a.status === "resolved"
+    ? '<div style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;font-weight:600;color:#276749">✓ This alert has been resolved and removed from the active queue.</div>'
+    : "";
 
   panel.innerHTML = resolvedBanner +
-    '<div class="detail-header"><div class="detail-top"><div><div class="case-id">CASE '+a.id+'</div><div class="case-name">'+(a.name||"Unknown Patient")+'</div><div class="case-sub" id="detail-elapsed">Alert at '+(a.time||a.timestamp||"")+" · "+formatElapsed(a.elapsed_seconds)+'</div></div><div class="urgency-ring" style="background:'+cfg.bg+';border:3px solid '+cfg.color+'"><div class="ring-label" style="color:'+cfg.color+'">'+(a.urgency||"LOW")+'</div><div class="ring-conf" style="color:'+cfg.color+'">'+conf+'% conf.</div></div></div><div class="urgency-banner" style="background:'+cfg.bg+';border-color:'+cfg.color+';color:'+cfg.color+'">'+bannerText+'</div></div>' +
-    '<div class="detail-section"><div class="section-label">👤 Patient Information</div><div class="info-grid"><div class="info-item"><div class="info-item-label">CONTACT</div><div class="info-item-val">'+(a.contact||"—")+'</div></div><div class="info-item"><div class="info-item-label">MOBILITY</div><div class="info-item-val">'+(a.mobility||"—")+'</div></div><div class="info-item"><div class="info-item-label">LANGUAGE</div><div class="info-item-val">'+(a.language||"—")+'</div></div><div class="info-item"><div class="info-item-label">EMERGENCY CONTACT</div><div class="info-item-val">'+(a.emergency_contact||"—")+'</div></div><div class="info-item full"><div class="info-item-label">ALLERGIES</div><div style="margin-top:4px">'+algHtml+'</div></div></div></div>' +
-    '<div class="detail-section"><div class="section-label">📍 Location</div><div class="address-box"><div><div class="address-text">'+(a.address||"Address not available")+'</div><div class="address-sub">Singapore</div></div><button class="map-btn" onclick="window.open(\'https://maps.google.com?q='+encodeURIComponent(a.address||"")+'\',\'_blank\')">Open Map ↗</button></div></div>' +
-    '<div class="detail-section"><div class="section-label">🎙 Audio Alert</div><div class="audio-box'+(isPlaying?" playing":"")+'"><div class="audio-top"><button class="play-btn" style="background:'+(isPlaying?"#e53e3e":"#2b6cb0")+'" onclick="togglePlay(\''+a.id+'\')">'+(isPlaying?"⏹":"▶")+'</button><div style="flex:1"><div class="audio-filename">'+(a.audioFile||a.id)+'</div><div class="waveform">'+waveBars+'</div></div></div><div class="transcript-box"><span class="transcript-prefix">AI TRANSCRIPT: </span>"'+tx+'"</div></div></div>' +
+    '<div class="detail-header">' +
+      '<div class="detail-top">' +
+        '<div>' +
+          '<div class="case-id">CASE '+a.id+'</div>' +
+          '<div class="case-name">'+(a.name||"Unknown Patient")+'</div>' +
+          '<div class="case-sub" id="detail-elapsed">Alert at '+(a.time||a.timestamp||"")+" · "+formatElapsed(a.elapsed_seconds)+'</div>' +
+        '</div>' +
+        '<div class="urgency-ring" style="background:'+cfg.bg+';border:3px solid '+cfg.color+'">' +
+          '<div class="ring-label" style="color:'+cfg.color+'">'+(a.urgency||"LOW")+'</div>' +
+          '<div class="ring-conf" style="color:'+cfg.color+'">'+conf+'% conf.</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="urgency-banner" style="background:'+cfg.bg+';border-color:'+cfg.color+';color:'+cfg.color+'">'+bannerText+'</div>' +
+    '</div>' +
+
+    '<div class="detail-section"><div class="section-label">👤 Patient Information</div>' +
+      '<div class="info-grid">' +
+        '<div class="info-item"><div class="info-item-label">CONTACT</div><div class="info-item-val">'+(a.contact||"—")+'</div></div>' +
+        '<div class="info-item"><div class="info-item-label">MOBILITY</div><div class="info-item-val">'+(a.mobility||"—")+'</div></div>' +
+        '<div class="info-item"><div class="info-item-label">LANGUAGE</div><div class="info-item-val">'+(a.language||"—")+'</div></div>' +
+        '<div class="info-item"><div class="info-item-label">EMERGENCY CONTACT</div><div class="info-item-val">'+(a.emergency_contact||"—")+'</div></div>' +
+        '<div class="info-item full"><div class="info-item-label">ALLERGIES</div><div style="margin-top:4px">'+algHtml+'</div></div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="detail-section"><div class="section-label">📍 Location</div>' +
+      '<div class="address-box">' +
+        '<div><div class="address-text">'+(a.address||"Address not available")+'</div><div class="address-sub">Singapore</div></div>' +
+        '<button class="map-btn" onclick="window.open(\'https://maps.google.com?q='+encodeURIComponent(a.address||"")+'\',\'_blank\')">Open Map ↗</button>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="detail-section"><div class="section-label">🎙 Audio Alert</div>' +
+      '<div class="audio-box'+(isPlaying?" playing":"")+'"><div class="audio-top">' +
+        '<button class="play-btn" style="background:'+(isPlaying?"#e53e3e":"#2b6cb0")+'" onclick="togglePlay(\''+a.id+'\')">'+(isPlaying?"⏹":"▶")+'</button>' +
+        '<div style="flex:1"><div class="audio-filename">'+(a.audioFile||a.id)+'</div><div class="waveform">'+waveBars+'</div></div>' +
+      '</div><div class="transcript-box"><span class="transcript-prefix">AI TRANSCRIPT: </span>"'+tx+'"</div></div>' +
+    '</div>' +
+
+(a.llm_note || a.triage_flags || a.decision_source || a.rule_priority || a.llm_priority ? 
+  '<div class="detail-section"><div class="section-label">🤖 AI Triage Intelligence</div>' +
+  '<div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;">' +
+  (a.decision_source ? '<div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:10px;font-weight:700;color:#a0aec0;letter-spacing:0.08em;min-width:60px;padding-top:2px">SOURCE</span><div style="font-size:12px;color:#4a5568">'+a.decision_source+'</div></div>' : "") +
+  ((a.rule_priority || a.llm_priority) ? '<div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:10px;font-weight:700;color:#a0aec0;letter-spacing:0.08em;min-width:60px;padding-top:2px">PRIORITY</span><div style="font-size:12px;color:#4a5568">'+(a.rule_priority || "-")+' → '+(a.llm_priority || "-")+'</div></div>' : "") +
+  (a.triage_flags ? '<div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:10px;font-weight:700;color:#a0aec0;letter-spacing:0.08em;min-width:60px;padding-top:1px">FLAGS</span><div style="display:flex;flex-wrap:wrap;gap:5px">' + a.triage_flags.split(",").map(f => '<span style="font-size:11px;padding:2px 8px;border-radius:99px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;font-weight:600">' + f.trim() + '</span>').join("") + '</div></div>' : "") +
+  (a.llm_note ? '<div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:10px;font-weight:700;color:#a0aec0;letter-spacing:0.08em;min-width:60px;padding-top:2px">REASON</span><div style="font-size:12px;color:#4a5568;line-height:1.6;font-style:italic">' + a.llm_note + '</div></div>' : "") +
+  '</div></div>'
+: "") +
     '<div class="detail-section"><div class="section-label">🔑 Risk Keywords</div>'+kwHtml+'</div>' +
     '<div class="detail-section"><div class="section-label">🏥 Medical History</div><div class="conditions-row">'+condTags+'</div></div>' +
     '<div class="detail-section"><div class="section-label">💊 Current Medications</div>'+medHtml+'</div>' +
-    '<div class="detail-section"><div class="section-label">⚡ Responder Actions</div><div class="actions-grid">'+actionBtns+'</div><div class="status-btns">'+statusBtns+'</div></div>';
+
+    '<div class="detail-section"><div class="section-label">⚡ Responder Actions</div>' +
+      scdfDispatchedBanner +
+      '<div class="actions-grid">' +
+        '<button class="action-btn" style="color:#2b6cb0;border-color:#2b6cb0" onclick="flashAction(this,\'#2b6cb0\')">📞 Call Senior</button>' +
+        scdfBtnHtml +
+        '<button class="action-btn" style="color:#744210;border-color:#744210" onclick="flashAction(this,\'#744210\')">📱 Notify NOK</button>' +
+        '<button class="action-btn" style="color:#553c9a;border-color:#553c9a" onclick="flashAction(this,\'#553c9a\')">👷 Send Volunteer</button>' +
+      '</div>' +
+      '<div class="status-btns">'+statusBtns+'</div>' +
+    '</div>';
 }
 
 // ── Actions ───────────────────────────────────────────────────
@@ -448,6 +534,20 @@ function flashAction(btn, color) {
   const orig = btn.innerHTML;
   btn.style.background = color; btn.style.color = "#fff"; btn.innerHTML = "✓ Sent";
   setTimeout(() => { btn.style.background = "#fff"; btn.style.color = color; btn.innerHTML = orig; }, 1500);
+}
+
+// ── dispatchScdf: locks button for this patient until resolved ─
+function dispatchScdf(id) {
+  scdfDispatchedIds.add(id);
+  // bump status to acknowledged so card chip updates
+  statusOverrides[id] = "acknowledged";
+  alerts = alerts.map(a => a.id === id ? {...a, status:"acknowledged"} : a);
+  const alert = alerts.find(a => a.id === id);
+  if (alert && alert.report_file) {
+    fetch("/api/alerts/status", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({report_file:alert.report_file, status:"acknowledged"}) });
+  }
+  renderList();
+  renderDetail();
 }
 
 function setStatus(id, status) {
@@ -458,8 +558,10 @@ function setStatus(id, status) {
     fetch("/api/alerts/status", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({report_file:alert.report_file, status}) });
   }
 
-  // when resolved: remove from stable order, auto-select next active alert
   if (status === "resolved") {
+    // ── clear SCDF lock on resolve ────────────────────────────
+    scdfDispatchedIds.delete(id);
+
     stableOrder = stableOrder.filter(sid => sid !== id);
     if (selectedId === id) {
       selectedId = null;
@@ -468,7 +570,10 @@ function setStatus(id, status) {
     }
     renderList();
     if (selectedId) renderDetail();
-    else { document.getElementById("detailpanel").style.display = "none"; document.getElementById("empty-state").style.display = "flex"; }
+    else {
+      document.getElementById("detailpanel").style.display = "none";
+      document.getElementById("empty-state").style.display = "flex";
+    }
   } else {
     renderList();
     renderDetail();
