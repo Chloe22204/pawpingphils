@@ -3,8 +3,8 @@
 ====================================================
 
   Priority  : 🟠 HIGH
-  File      : PAB_Alert_user_001_PAB_Alert_20260308_112049.webm
-  Timestamp : 2026-03-08 11:21:00
+  File      : PAB_Alert_user_001_PAB_Alert_20260308_181201.webm
+  Timestamp : 2026-03-08 18:12:39
 
   PATIENT INFORMATION
   ----------------------------------------
@@ -24,11 +24,12 @@
 
   TRANSCRIPT
   ----------------------------------------
-  Oh, chill. I'm falling in the toilet.
+  Help, I fell down.
 
   KEYWORDS DETECTED
   ----------------------------------------
-  HIGH     : fall
+  CRITICAL : help
+  HIGH     : fell down
 
   HYBRID TRIAGE
   ----------------------------------------
@@ -36,7 +37,7 @@
   Rule Priority    : P2
   LLM Priority     : P2
   Decision Source  : hybrid_rules_held
-  Flags            : Fall reported in toilet, Distressed vocal tone, Age 78 with CAD & diabetes, Uses walking stick, Impact sound detected
-  LLM Reasoning    : The user reports falling in the toilet — a high-risk location for injury — with distressed tone and audible impact, compounded by advanced age and significant comorbidities including coronary artery disease and diabetes. While breathing is normal now, falls in this population carry high risk of hidden injury, syncope, 
+  Flags            : Age 78 with CAD and diabetes, Fell down + distressed tone, Uses walking stick, No audio distress cues like gasping or crying
+  LLM Reasoning    : Tan Ah Kow, 78, with coronary artery disease, diabetes, and hypertension, reports falling — a high-risk event for older adults with mobility aids. Though breathing is normal and no acute audio distress is detected, the combination of fall report, distressed vocal tone, and significant comorbidities warrants urgent asse
 
 ====================================================

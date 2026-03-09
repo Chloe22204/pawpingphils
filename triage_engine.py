@@ -79,6 +79,21 @@ KEYWORD_RULES = {
     "im fine":         ("P4", "ACCIDENTAL"),
     "okay":            ("P4", "ACCIDENTAL"),
     "by accident":     ("P4", "ACCIDENTAL"),
+
+    # Non-medical / property / pet context → P4
+    "leaking":         ("P4", "NON_MEDICAL"),
+    "leak":            ("P4", "NON_MEDICAL"),
+    "roof leak":       ("P4", "NON_MEDICAL"),
+    "flooded":         ("P4", "NON_MEDICAL"),
+    "flood":           ("P4", "NON_MEDICAL"),
+    "power outage":    ("P4", "NON_MEDICAL"),
+    "power cut":       ("P4", "NON_MEDICAL"),
+    "broken phone":    ("P4", "NON_MEDICAL"),
+    "lost keys":       ("P4", "NON_MEDICAL"),
+    "cat":             ("P4", "NON_MEDICAL"),
+    "dog":             ("P4", "NON_MEDICAL"),
+    "rabbit":          ("P4", "NON_MEDICAL"),
+    "pet":             ("P4", "NON_MEDICAL"),
 }
 
 # Priority rank for comparison (lower = more urgent)
@@ -261,6 +276,7 @@ def apply_background_modifiers(
     """
     escalated        = False
     modifiers_applied = []
+    non_medical_context = ("NON_MEDICAL" in (flags or [])) or ("ACCIDENTAL" in (flags or []))
 
     for cue in (background_cues or []):
         cue = cue.lower().strip()
@@ -274,6 +290,10 @@ def apply_background_modifiers(
 
         # +1 level escalation
         elif cue in ("impact", "water", "moaning"):
+            # Do not escalate background water noise for clearly non-medical/property cases.
+            if cue == "water" and non_medical_context:
+                modifiers_applied.append("bg_water_noted_non_medical")
+                continue
             rank = PRIORITY_RANK.get(current_priority, 4)
             if rank > 1:  # can't escalate beyond P1
                 new_rank     = rank - 1

@@ -142,6 +142,15 @@ def _is_gibberish_transcript(transcript: str, segments: list) -> bool:
     return filler_driven or incoherent_structure or asr_uncertain
 
 
+def _is_non_human_only_case(detection: dict) -> bool:
+    matched = detection.get("matched", {}) if isinstance(detection, dict) else {}
+    low = matched.get("low", []) if isinstance(matched, dict) else []
+    critical = matched.get("critical", []) if isinstance(matched, dict) else []
+    high = matched.get("high", []) if isinstance(matched, dict) else []
+    medium = matched.get("medium", []) if isinstance(matched, dict) else []
+    return bool(low) and not (critical or high or medium)
+
+
 def transcribe_and_analyse(audio_path: Path):
     result = model.transcribe(
         str(audio_path),
@@ -229,6 +238,19 @@ def transcribe_and_analyse(audio_path: Path):
         triage_result["flags"] = flags
         triage_result["decision_source"] = "gibberish_override"
         triage_result["trigger_path"] = list(triage_result.get("trigger_path", [])) + ["gibberish_override_P1"]
+
+    # Final hard override: non-human/property-only cases must stay LOW.
+    if _is_non_human_only_case(detection):
+        triage_result["priority_level"] = "P4"
+        triage_result["priority_label"] = PRIORITY_META["P4"]["label"]
+        triage_result["dispatch_action"] = PRIORITY_META["P4"]["dispatch_action"]
+        triage_result["response_target"] = PRIORITY_META["P4"]["response_target"]
+        flags = list(triage_result.get("flags", []))
+        if "NON_HUMAN_CONTEXT" not in flags:
+            flags.append("NON_HUMAN_CONTEXT")
+        triage_result["flags"] = flags
+        triage_result["decision_source"] = "non_human_override"
+        triage_result["trigger_path"] = list(triage_result.get("trigger_path", [])) + ["non_human_override_P4"]
 
     print(f"\n🚨 TRIAGE: {triage_result['priority_level']} — {triage_result['priority_label']}")
     print(f"   Dispatch : {triage_result['dispatch_action']}")

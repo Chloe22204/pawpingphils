@@ -2,9 +2,9 @@
   PAB EMERGENCY RISK REPORT
 ====================================================
 
-  Priority  : 🟡 MEDIUM
-  File      : PAB_Alert_user_001_PAB_Alert_20260308_110355.webm
-  Timestamp : 2026-03-08 11:04:04
+  Priority  : 🟠 HIGH
+  File      : PAB_Alert_user_001_PAB_Alert_20260308_152426.webm
+  Timestamp : 2026-03-08 15:24:38
 
   PATIENT INFORMATION
   ----------------------------------------
@@ -24,19 +24,19 @@
 
   TRANSCRIPT
   ----------------------------------------
-  Smile, smile, smile, smile, smile
+  Help! I fell in the toilet!
 
   KEYWORDS DETECTED
   ----------------------------------------
-  None detected.
+  CRITICAL : help
 
   HYBRID TRIAGE
   ----------------------------------------
-  Final Priority   : P3 (MEDIUM)
-  Rule Priority    : P3
-  LLM Priority     : P4
+  Final Priority   : P2 (HIGH)
+  Rule Priority    : P2
+  LLM Priority     : P2
   Decision Source  : hybrid_rules_held
-  Flags            : Repetitive non-urgent vocalization, Calm tone and normal breathing, No distress indicators detected, No matched keywords or background cues, Consistent with baseline for elderly user
-  LLM Reasoning    : The transcript consists of repeated, calm utterances with no signs of distress, abnormal breathing, or environmental risk cues. All physiological and audio signals align with a low-acuity, non-emergent state.
+  Flags            : Fall in toilet, Age 78 with CAD & diabetes, Distressed vocal tone, Impact sound detected, Uses walking stick
+  LLM Reasoning    : Falling in the toilet poses significant injury risk for an elderly person with coronary artery disease and diabetes. Distressed tone and audible impact suggest possible injury requiring prompt assessment.
 
 ====================================================

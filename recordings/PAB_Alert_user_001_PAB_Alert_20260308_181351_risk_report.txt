@@ -2,9 +2,9 @@
   PAB EMERGENCY RISK REPORT
 ====================================================
 
-  Priority  : 🟠 HIGH
-  File      : PAB_Alert_user_001_PAB_Alert_20260308_110423.webm
-  Timestamp : 2026-03-08 11:04:30
+  Priority  : 🔴 CRITICAL
+  File      : PAB_Alert_user_001_PAB_Alert_20260308_181351.webm
+  Timestamp : 2026-03-08 18:14:02
 
   PATIENT INFORMATION
   ----------------------------------------
@@ -24,19 +24,19 @@
 
   TRANSCRIPT
   ----------------------------------------
-  Help me, I'm on the way
+  Help me, I got stabbed
 
   KEYWORDS DETECTED
   ----------------------------------------
-  CRITICAL : help, help me
+  CRITICAL : stabbed, help, stab, help me
 
   HYBRID TRIAGE
   ----------------------------------------
-  Final Priority   : P2 (HIGH)
-  Rule Priority    : P3
-  LLM Priority     : P2
-  Decision Source  : hybrid_llm_override
-  Flags            : Distressed vocal tone, Elderly with CAD and diabetes, Ambulating while calling for help, No background noise to confirm safety, 'On the way' suggests imminent fall or instability
-  LLM Reasoning    : The caller is an elderly person with significant cardiac and metabolic comorbidities, using a walking stick, and is actively moving while expressing distress — increasing fall and acute event risk. Although breathing is normal and no immediate life threat is confirmed, the context warrants rapid response to prevent det
+  Final Priority   : P1 (CRITICAL)
+  Rule Priority    : P1
+  LLM Priority     : P1
+  Decision Source  : hybrid_rules_held
+  Flags            : 'stabbed' is high-acuity keyword, Screaming vocal tone, Age 78 with CAD and diabetes, Background impact sound, Walking stick indicates mobility risk
+  LLM Reasoning    : The phrase 'I got stabbed' is a critical, life-threatening statement. Combined with screaming vocal tone, advanced age, and serious comorbidities (CAD, diabetes), this constitutes an immediate life threat requiring urgent response.
 
 ====================================================

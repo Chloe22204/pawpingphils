@@ -19,7 +19,7 @@ except ImportError:
 # ── Tuning thresholds ─────────────────────────────────────────────────────────
 SILENCE_RMS_THRESHOLD       = 0.004   
 LABOURED_ZCR_THRESHOLD      = 0.09    
-RAPID_BREATH_RATE_THRESHOLD = 35      
+RAPID_BREATH_RATE_THRESHOLD = 30      
 WEAK_VOICE_RMS_THRESHOLD    = 0.015
 SCREAM_F0_THRESHOLD         = 600
 SLUR_MFCC_VARIANCE_THRESH   = 120

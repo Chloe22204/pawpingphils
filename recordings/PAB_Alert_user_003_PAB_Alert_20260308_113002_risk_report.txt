@@ -3,8 +3,8 @@
 ====================================================
 
   Priority  : 🟠 HIGH
-  File      : PAB_Alert_user_003_PAB_Alert_20260308_112251.webm
-  Timestamp : 2026-03-08 11:23:02
+  File      : PAB_Alert_user_003_PAB_Alert_20260308_113002.webm
+  Timestamp : 2026-03-08 11:30:18
 
   PATIENT INFORMATION
   ----------------------------------------
@@ -24,11 +24,11 @@
 
   TRANSCRIPT
   ----------------------------------------
-  I have fallen
+  You want this?
 
   KEYWORDS DETECTED
   ----------------------------------------
-  HIGH     : fallen, fall
+  None detected.
 
   HYBRID TRIAGE
   ----------------------------------------
@@ -36,7 +36,7 @@
   Rule Priority    : P2
   LLM Priority     : P2
   Decision Source  : hybrid_rules_held
-  Flags            : Age 74 with CKD Stage 3, Peripheral neuropathy increases fall risk, Distressed vocal tone despite normal breathing, Insulin use raises hypoglycemia concern, Slow gait suggests mobility vulnerability
-  LLM Reasoning    : The user is a 74-year-old with multiple comorbidities including CKD Stage 3 and peripheral neuropathy, both increasing risk of serious injury or complications from a fall. Though breathing is normal and audio is present, the distressed vocal tone and high-risk clinical profile warrant urgent assessment to rule out hidd
+  Flags            : Distressed vocal tone, Background impact sound, Age >70 with CKD Stage 3, Peripheral neuropathy increases fall risk, No clear verbalization of need
+  LLM Reasoning    : Distressed vocal tone combined with background impact sound suggests possible fall or acute distress. Patient’s age and comorbidities (CKD Stage 3, peripheral neuropathy) elevate risk of serious injury or decompensation, warranting rapid check-in despite lack of explicit request.
 
 ====================================================

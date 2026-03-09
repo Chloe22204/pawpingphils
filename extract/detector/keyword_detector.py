@@ -47,7 +47,7 @@ LOW = [
     # pet incidents
     "rabbit", "cat", "dog", "bird", "fish", "hamster", "pet","turtle",
     # property
-    "broken phone", "lost keys", "spilled", "dropped","drop", "broke", "leaking", "flooded", "flood", "power cut", "power failure", "no power",
+    "broken phone", "lost keys", "spilled", "dropped","drop", "leaking", "flooded", "flood", "power cut", "power failure", "no power",
     "power outage", "lights out",
 ]
 
